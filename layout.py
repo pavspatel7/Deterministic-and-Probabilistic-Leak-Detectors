@@ -128,7 +128,7 @@ def runMain(k, sizeOfGrid, leaks):
     # Pick Random Bot Position (x_bot,y_bot)
     pickRandomInt = random.randint(0,len(OpenCells)-1)
     x_bot, y_bot = OpenCells[pickRandomInt]
-    OriginalGrid[x_bot][y_bot] = "🤖"
+    OriginalGrid[x_bot][y_bot] = "😀"
     OpenCells.remove((x_bot,y_bot))
     
     # Create detection Layout with the being the bot position in the center
@@ -146,10 +146,6 @@ def runMain(k, sizeOfGrid, leaks):
     else: 
         # if the given k is higher than says leak is false outside of the detection grid
         Isleak = False
-    
-    # For testing purpose to check the grid on main grid
-    # for (x,y) in detectionGrid:
-    #     OriginalGrid[x][y] = "😂"
         
     # Now checks if k = 2 which satisfies here so it will open the second leak cell
     if len(OpenCells) != 0 and leaks > 1:
