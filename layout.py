@@ -175,8 +175,8 @@ def runMain(k, sizeOfGrid, leaks):
     
     # return the Original Grid, detection Grid for bot, and thier co-ordinates
     if leaks == 1:
-        return OriginalGrid, detectionGrid, (x_bot,y_bot), (x_leak,y_leak)
+        return OriginalGrid, (x_bot,y_bot), (x_leak,y_leak)
     if leaks == 2:
-        return OriginalGrid, detectionGrid, (x_bot,y_bot), (x_leak,y_leak), (x_leak_1,y_leak_1)
+        return OriginalGrid, (x_bot,y_bot), (x_leak,y_leak), (x_leak_1,y_leak_1)
 
 

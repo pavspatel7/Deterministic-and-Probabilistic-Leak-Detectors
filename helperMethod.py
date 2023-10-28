@@ -1,8 +1,10 @@
 from collections import deque
-innerGridCells = []
 
-# Creating an dection layout based on the current position of the Grid..
-def CreateDetector(k,sizeOfGrid, grid, x_bot, y_bot):
+
+# Creating an dection layout based on the current position of the Grid by co-ordinates..
+def CreateDetector(k, grid, botpos):
+    innerGridCells = []
+    x_bot, y_bot = botpos
     detectorGridSize = (2*k + 1)
     halfSize = (detectorGridSize - 1) // 2
     x1 = x_bot - halfSize
@@ -13,9 +15,28 @@ def CreateDetector(k,sizeOfGrid, grid, x_bot, y_bot):
             inner_x = x1 + i
             inner_y = y1 + j
             # Check if the inner_x and inner_y are within the bounds of the size of the grid and not block cells
-            if 0 <= inner_x < sizeOfGrid and 0 <= inner_y < sizeOfGrid and grid[inner_x][inner_y] != "⬛️":
+            if 0 <= inner_x < len(grid) and 0 <= inner_y < len(grid) and grid[inner_x][inner_y] != "⬛️":
                 innerGridCells.append((inner_x, inner_y))
     return innerGridCells
+
+# Returns the grid in 2D form used inside the 
+def create_mini_grid(k, grid, botpos):
+    x, y = botpos
+    mini_grid_size = (2*k + 1)
+    half_size = (mini_grid_size )// 2
+
+    min_x = max(0, x - half_size)
+    max_x = min(len(grid[0]) - 1, x + half_size)
+    min_y = max(0, y - half_size)
+    max_y = min(len(grid)-1, y + half_size)
+
+    mini_grid = []
+    for i in range(min_x, max_x + 1):
+        row = []
+        for j in range(min_y, max_y + 1):
+            row.append(grid[i][j])
+        mini_grid.append(row)
+    return mini_grid
 
 def find_shortest_path(original_grid, bot_no, start, end):
     queue = deque([(start, [])])
@@ -35,20 +56,20 @@ def find_shortest_path(original_grid, bot_no, start, end):
     return -1
 
 # Method for Outer Fire
-def outer_detection_cells(grid, detectionGrid):
+def outer_detection_cells(grid):
     outer_cells_list = []
     # 1) Get all the fire cells of the originalGrid
     outer_cells = [(i, j) for i in range(len(grid)) for j in range(len(grid)) if grid[i][j] == "✅"]
     for x, y in outer_cells:
         if is_outer_detection(grid, x, y):
             outer_cells_list.append((x, y))
-    print(len(outer_cells_list))
+    #print(len(outer_cells_list))
     return outer_cells_list
 
 # Helpers of Methods
 def get_neighbors(grid, x, y):
     neighbors = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
-    return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and grid[nx][ny] == "✅" and grid[nx][ny] != "⬛️"]
+    return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and grid[nx][ny] != "⬛️" and (grid[nx][ny] == "✅" or grid[nx][ny] == "😀")]
 
 # Give the validity of the move for the BFS
 def is_valid_move_bot(grid,bot_no, x, y):
