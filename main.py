@@ -1,3 +1,4 @@
+from pydoc import Helper
 import random
 
 # Deterministic Leak Detectors
@@ -14,15 +15,14 @@ from Probabilistic_Leak_Detectors.botEight import bot8
 
 # Layout
 from layout import runMain
-k = 4
-sizeOfGrid = 50
+k = 2
+sizeOfGrid = 25
 leaks = 1
 
 # grid_with_one_leak, detectionGrid, botpos, leakpos_1  = runMain(k,sizeOfGrid,1)
 # grid_with_two_leak, detectionGrid, botpos, leakpos_1, leakpos_2 = runMain(k,sizeOfGrid,2)
 
 for i in range(1):
-    
     grid_with_one_leak, detectionGrid, botpos, leakpos_1  = runMain(k,sizeOfGrid,leaks)
     # grid_with_two_leak, detectionGrid, botpos, leakpos_1, leakpos_2 = runMain(k,sizeOfGrid,leaks)
 
