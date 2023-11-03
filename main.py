@@ -15,21 +15,23 @@ from Probabilistic_Leak_Detectors.botEight import bot8
 
 # Layout
 from layout import runMain
-k = 1
+
+
+k = 4              # sixe of detector ((2*k) +1)
 sizeOfGrid = 25
 leaks = 1
 
 # grid_with_one_leak, detectionGrid, botpos, leakpos_1  = runMain(k,sizeOfGrid,1)
 # grid_with_two_leak, detectionGrid, botpos, leakpos_1, leakpos_2 = runMain(k,sizeOfGrid,2)
 
-for i in range(50):
+for i in range(1):
     grid_with_one_leak, botpos, leakpos_1  = runMain(k,sizeOfGrid,leaks)
     # grid_with_two_leak, botpos, leakpos_1, leakpos_2 = runMain(k,sizeOfGrid,leaks)
 
 
     # Bot 1 vs Bot 2
-   # print("bot 1 Result" )
-    bot1(k, grid_with_one_leak, botpos, leakpos_1)
+    # print("bot 1 Result" )
+    # bot1(k, grid_with_one_leak, botpos, leakpos_1)
     
     # print("bot2")
     # bot2(grid_with_one_leak, detectionGrid, botpos, leakpos_1)
@@ -40,8 +42,8 @@ for i in range(50):
     # bot6(grid_with_two_leak, detectionGrid, botpos, leakpos_1, leakpos_2)
     
     # # Bot 3 vs Bot 4
-    # print("bot3")
-    # bot3(grid_with_one_leak, detectionGrid, botpos, leakpos_1)
+    print("bot3")
+    bot3(grid_with_one_leak, botpos, leakpos_1)
     # print("bot4")
     # bot4(grid_with_one_leak, detectionGrid, botpos, leakpos_1)
     # # bot 7 vs bot 8

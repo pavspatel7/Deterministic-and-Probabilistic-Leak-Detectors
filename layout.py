@@ -1,13 +1,14 @@
 import random
 
 class creatingLayout():
+    
     def __init__(self):
         # Initializing Variables 
         self.openGrid = []
         self.grid = []
         self.innerGridCells = []
         
-    def Inititate_Grid(self, D):
+    def inititate_Grid(self, D):
         self.grid = [["⬛️" for _ in range(D)] for _ in range(D)]
         openBlockPosArr = []
         deadEndCells = []
@@ -100,7 +101,7 @@ class creatingLayout():
         return self.openGrid
 
     # Creating an dection layout based on the current position of the Grid..
-    def CreateDetector(self,k, sizeOfGrid, x_bot,y_bot):
+    def createDetector(self,k, sizeOfGrid, x_bot,y_bot):
         detectorGridSize = (2*k + 1)
         halfSize = (detectorGridSize - 1) // 2
         x1 = x_bot - halfSize
@@ -122,7 +123,7 @@ def runMain(k, sizeOfGrid, leaks):
     layout = creatingLayout()
     
     # Generate Layout
-    OriginalGrid = layout.Inititate_Grid(sizeOfGrid)
+    OriginalGrid = layout.inititate_Grid(sizeOfGrid)
     OpenCells = layout.getOpenGridCell(sizeOfGrid)
     
     # Pick Random Bot Position (x_bot,y_bot)
@@ -132,11 +133,12 @@ def runMain(k, sizeOfGrid, leaks):
     OpenCells.remove((x_bot,y_bot))
     
     # Create detection Layout with the being the bot position in the center
-    detectionGrid = layout.CreateDetector(k, sizeOfGrid, x_bot, y_bot)
+    detectionGrid = layout.createDetector(k, sizeOfGrid, x_bot, y_bot)
     # when there will leak 1 then it will only get the one leak cell
     for (x,y) in detectionGrid:
         if (x,y) in OpenCells:
             OpenCells.remove((x,y))
+            
     # Now checks if k = 1 (Means Leak is only 1) 
     # if Leaks is 2 then if statement will run for the first leak cell
     if len(OpenCells) != 0 and leaks >= 1:

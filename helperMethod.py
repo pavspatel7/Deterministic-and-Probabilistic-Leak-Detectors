@@ -38,7 +38,7 @@ def create_mini_grid(k, grid, botpos):
         mini_grid.append(row)
     return mini_grid
 
-def find_shortest_path(original_grid, bot_no, start, end):
+def find_shortest_path(index, original_grid, bot_no, start, end):
     queue = deque([(start, [])])
     visited = set()
     visited_dfs = set()
@@ -49,27 +49,36 @@ def find_shortest_path(original_grid, bot_no, start, end):
         if (x, y) not in visited:
             visited.add((x, y))
             visited_dfs.add((x, y))
-            for nx, ny in get_neighbors(original_grid, x, y):
+            for nx, ny in get_neighbors(index,original_grid, x, y):
                 if is_valid_move_bot(original_grid, bot_no, nx, ny):
                     queue.append(((nx, ny), path + [(nx, ny)]))
             visited_dfs.remove((x, y))
     return -1
 
-# Method for Outer Fire
+# Method for Outer safe cell
 def outer_detection_cells(grid):
     outer_cells_list = []
-    # 1) Get all the fire cells of the originalGrid
+    # 1) Get all the safe cells of the originalGrid
     outer_cells = [(i, j) for i in range(len(grid)) for j in range(len(grid)) if grid[i][j] == "✅"]
     for x, y in outer_cells:
         if is_outer_detection(grid, x, y):
             outer_cells_list.append((x, y))
-    #print(len(outer_cells_list))
+    
     return outer_cells_list
 
 # Helpers of Methods
-def get_neighbors(grid, x, y):
+def get_neighbors(index, grid, x, y):
     neighbors = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
-    return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and grid[nx][ny] != "⬛️" and (grid[nx][ny] == "✅" or grid[nx][ny] == "😀")]
+    # index = 0 : for finding the neighbors of ' ❎ '  
+    if index == 0:
+        return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and grid[nx][ny] != "⬛️" and (grid[nx][ny] == "❎" or grid[nx][ny] == "😀" or grid[nx][ny] == "🟥")]
+    # index = 1 : for finding the neighbors of ' ✅ ' 
+    if index == 1:
+        return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and grid[nx][ny] != "⬛️" and (grid[nx][ny] == "✅" or grid[nx][ny] == "😀")]
+    # index = 1 : for finding the neighbors of ' ✅ ' 
+    if index == 2:
+        return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and grid[nx][ny] != "⬛️"]
+
 
 # Give the validity of the move for the BFS
 def is_valid_move_bot(grid,bot_no, x, y):
