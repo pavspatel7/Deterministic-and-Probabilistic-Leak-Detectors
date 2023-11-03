@@ -63,15 +63,14 @@ def outer_detection_cells(grid):
     for x, y in outer_cells:
         if is_outer_detection(grid, x, y):
             outer_cells_list.append((x, y))
-    
     return outer_cells_list
 
 # Helpers of Methods
 def get_neighbors(index, grid, x, y):
     neighbors = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
-    # index = 0 : for finding the neighbors of ' ❎ '  
+    # index = 0 : for finding the neighbors of ' ❌ '  
     if index == 0:
-        return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and grid[nx][ny] != "⬛️" and (grid[nx][ny] == "❎" or grid[nx][ny] == "😀" or grid[nx][ny] == "🟥")]
+        return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and grid[nx][ny] != "⬛️" and (grid[nx][ny] == "❌" or grid[nx][ny] == "😀" or grid[nx][ny] == "🟥")]
     # index = 1 : for finding the neighbors of ' ✅ ' 
     if index == 1:
         return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and grid[nx][ny] != "⬛️" and (grid[nx][ny] == "✅" or grid[nx][ny] == "😀")]
@@ -89,6 +88,6 @@ def is_valid_move_bot(grid,bot_no, x, y):
 def is_outer_detection(grid, x, y):
     neighbors = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
     for nx, ny in neighbors:
-        if 0 <= nx < len(grid) and 0 <= ny < len(grid) and (grid[nx][ny] == "⬜️" or grid[nx][ny] == "🟥"):
+        if 0 <= nx < len(grid) and 0 <= ny < len(grid) and (grid[nx][ny] == "⬜️" or grid[nx][ny] == "🟥" or grid[nx][ny] == "❌"):
             return True
     return False

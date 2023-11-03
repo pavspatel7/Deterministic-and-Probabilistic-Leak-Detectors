@@ -13,85 +13,130 @@ class bot5():
         self.innerGridCells = []
         self.k = k
         self.debug = 0
-        self.task_for_bot5(bot_pos)
+        self.task_for_bot5(self.grid, bot_pos)
         
-    def task_for_bot5(self, bot_pos):
+    def task_for_bot5(self, grid, bot_pos):
         t=0
-        leak = 1
         outcell_dict = {}
         botpos = bot_pos
         detectionGrid = []
-        while True:
+        type = True
+        positive_cells = []
+        negative_cells = []
+
+        while botpos != self.leakpos_1 and botpos != self.leakpos_2:
             # Everytime detection Grid Reset
             detectionGrid = []
             # Get the detction Grid using CreateDetector which takes an input of value k, 
-            detectionGrid = CreateDetector(self.k, self.grid, botpos)
-            for (x,y) in detectionGrid:
-                if (x,y) != botpos and (x,y) != self.leakpos_1:
-                    self.grid[x][y] = "✅"
+            detectionGrid = CreateDetector(self.k, grid, botpos)
+            if type:
+                for (x,y) in detectionGrid:
+                    if (x,y) != botpos and (x,y) != self.leakpos_1:
+                        grid[x][y] = "✅"
+                        positive_cells.append((x,y))
 
             # Print Layout
             if self.debug == 1:
-                for x in self.grid:
+                for x in grid:
                     print(' '.join(x))
                 print()
-
-            # Now check if the leak is in detectionGrid ?  
-            # REMANING TO FIND THE EXACT LOCATION INSIDE THE DETECTION            
+          
             # Sense the action of the leak in detection grid or not  
             self.SENSOR += 1
-            if self.leakpos_1 in detectionGrid:
-                if self.debug == 0:
+            if self.leakpos_1 in detectionGrid or self.leakpos_2 in detectionGrid:
+                for x in range(len(grid)):
+                    for y in range(len(grid)):
+                        if grid[x][y] == "⬜️":
+                            grid[x][y] = "✅" 
+                t+=1
+                if t == 1:
                     for (x,y) in detectionGrid:
                         if (x,y) != botpos and (x,y) != self.leakpos_1:
-                            self.grid[x][y] = "❎"
-                    for x in self.grid:
-                        print(' '.join(x))
-                    print()
+                            grid[x][y] = "❎"
+                              
+                i,j = botpos
+                neighbors = get_neighbors(0, grid, i,j)
+                grid[x_bot][y_bot] = "✅"
+                if len(neighbors) != 0:
+                    botpos = neighbors[random.randint(0,len(neighbors)-1)]
+                    self.MOVES+=1 # UPDATE MOVES BOT POS
+                else:
+                    outcell_dict = {}
+                    negative_cells = []
+                    for x in range(len(grid)):
+                        for y in range(len(grid)):
+                            if grid[x][y] == "❎" or grid[x][y] == "🟥":
+                                negative_cells.append((x,y))
+                    for item in negative_cells:
+                        l = find_shortest_path(2, grid ,1 ,botpos, item)
+                        if l:
+                            try:
+                                l = int(l)
+                                outcell_dict[item] = l  
+                            except:
+                                l = len(l)
+                                outcell_dict[item] = l 
+                    botpos = min((k for k, v in outcell_dict.items() if v >= 0), key=outcell_dict.get, default=None)
+                    self.MOVES += outcell_dict[botpos]  # UPDATE MOVE BOT POS
+                type = False
                 
-                if leak == 1:
-                    print(f"Bot Found Leak in {self.SENSOR} sense actions and {self.MOVES} moves..")
-                if leak == 2:
-                    print(f"Bot Found Leak in {self.SENSOR} sense actions and {self.MOVES} moves..")
-                    break
-                leak += 1
+                
+            else:
+                type = True
 
-            for (x,y) in detectionGrid:
-                if (x,y) != botpos and (x,y) != self.leakpos_1:
-                    self.grid[x][y] = "✅"
-            # If not then find the next position for the bot
-            x_bot, y_bot = botpos
-            for item in outer_detection_cells(self.grid):
-                # From the botpos to all marked outer cell which has atleast one open cell - Running BFS and storng data
-                # into the dictionary with key = co-ordinates and values = length of the path
-                l = find_shortest_path(self.grid,1,botpos, item)
-                if l:
-                    # Try if the return value if -1 which means no path found from botpos to that item
-                    try:
-                        l = int(l)
-                        outcell_dict[item] = l  
-                    # Now, store the length of the BFS and increament the MOVES needed to reach teh cell
-                    except:
-                        l = len(l)
-                        outcell_dict[item] = l 
+
+
+            if type:
+                for (x,y) in detectionGrid:
+                    if (x,y) != botpos and (x,y) != self.leakpos_1:
+                        grid[x][y] = "✅"
+                        positive_cells.append((x,y))
+                # If not then find the next position for the bot
+                x_bot, y_bot = botpos
+                outcell_dict = {}
+                for item in outer_detection_cells(grid):
+                    # From the botpos to all marked outer cell which has atleast one open cell - Running BFS and storng data
+                    # into the dictionary with key = co-ordinates and values = length of the path
+                    l = find_shortest_path(1, grid ,1 ,botpos, item)
+                    if l:
+                        # Try if the return value if -1 which means no path found from botpos to that item
+                        try:
+                            l = int(l)
+                            outcell_dict[item] = l  
+                        # Now, store the length of the BFS and increament the MOVES needed to reach teh cell
+                        except:
+                            l = len(l)
+                            outcell_dict[item] = l 
+                
+                # Marked the visited cell - No Leak
+                grid[x_bot][y_bot] = "✅"
+                # Get the minimum positive distance from botpos to nearest the outerlayer of the detection grid from the dictionary
+                botpos = min((k for k, v in outcell_dict.items() if v >= 0), key=outcell_dict.get, default=None)
+                # Steps needed to get the Outlayer of the detection Grid
+                # +1 is for to move to open cell form the outer layer of detection grid
+                self.MOVES += (outcell_dict[botpos] + 1)
+                botpos = self.get_open(grid, botpos)[0]
             
-            # Marked the visited cell - No Leak
-            self.grid[x_bot][y_bot] = "✅"
-            # Get the minimum positive distance from botpos to nearest the outerlayer of the detection grid from the dictionary
-            botpos = min((k for k, v in outcell_dict.items() if v >= 0), key=outcell_dict.get, default=None)
-            # Steps needed to get the Outlayer of the detection Grid
-            # +1 is for to move to open cell form the outer layer of detection grid
-            self.MOVES += (outcell_dict[botpos] + 1)
-            botpos = self.get_open(self.grid, botpos)[0]
+            
             # Distance changed from the current botpos, so assign dictionary value empty
-            outcell_dict = {}
+            # outcell_dict = {}
             # Mark Last bot postion
             x_bot,y_bot = botpos
-            self.grid[x_bot][y_bot] = "😀"
+            grid[x_bot][y_bot] = "😀"
+            
+            
+            
+            # Print Layout
+            if self.debug == 0:
+                print(botpos, self.leakpos_1)
+                for x in grid:
+                    print(''.join(x))
+                print()
+            # print(self.MOVES, self.SENSOR)
 
-            t += 1
 
-    def get_open(self, grid, bot):
+    def get_open(self,  grid, bot):
         x,y = bot
         neighbors = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
-        return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and (grid[nx][ny] == "⬜️" or grid[nx][ny] == "🟥")]
+        # Open Cells
+        return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and (grid[nx][ny] == "⬜️" or grid[nx][ny] == "🟥" or grid[nx][ny] == "❎")]

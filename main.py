@@ -1,4 +1,3 @@
-from pydoc import Helper
 import random
 
 # Deterministic Leak Detectors
@@ -17,8 +16,8 @@ from Probabilistic_Leak_Detectors.botEight import bot8
 from layout import runMain
 
 
-k = 4              # sixe of detector ((2*k) +1)
-sizeOfGrid = 25
+k = 5              # sixe of detector ((2*k) +1)
+sizeOfGrid = 50
 leaks = 1
 
 # grid_with_one_leak, detectionGrid, botpos, leakpos_1  = runMain(k,sizeOfGrid,1)
@@ -26,24 +25,24 @@ leaks = 1
 
 for i in range(1):
     grid_with_one_leak, botpos, leakpos_1  = runMain(k,sizeOfGrid,leaks)
-    # grid_with_two_leak, botpos, leakpos_1, leakpos_2 = runMain(k,sizeOfGrid,leaks)
-
+    
 
     # Bot 1 vs Bot 2
-    # print("bot 1 Result" )
-    # bot1(k, grid_with_one_leak, botpos, leakpos_1)
-    
+    bot_1 = bot1(k, grid_with_one_leak, botpos, leakpos_1)
+    print("BOT-1 == sensor", bot_1.SENSOR ,"moves", bot_1.MOVES, "average:-", (bot_1.SENSOR + bot_1.MOVES) / 2)
     # print("bot2")
     # bot2(grid_with_one_leak, detectionGrid, botpos, leakpos_1)
     # # bot 5 vs bot 6
     # print("bot5")
-    # bot5(k, grid_with_two_leak, botpos, leakpos_1, leakpos_2)
+    #grid_with_two_leak, botpos, leakpos_1, leakpos_2 = runMain(k,sizeOfGrid,2)
+    #bot_5 = bot5(k, grid_with_two_leak, botpos, leakpos_1, leakpos_2)
+    #print("BOT-5 == sensor", bot_5.SENSOR ,"moves", bot_5.MOVES, "average:-", (bot_5.SENSOR + bot_5.MOVES) / 2)
     # print("bot6")
     # bot6(grid_with_two_leak, detectionGrid, botpos, leakpos_1, leakpos_2)
     
     # # Bot 3 vs Bot 4
-    print("bot3")
-    bot3(grid_with_one_leak, botpos, leakpos_1)
+    # print("bot3")
+    # bot3(grid_with_one_leak, botpos, leakpos_1)
     # print("bot4")
     # bot4(grid_with_one_leak, detectionGrid, botpos, leakpos_1)
     # # bot 7 vs bot 8
