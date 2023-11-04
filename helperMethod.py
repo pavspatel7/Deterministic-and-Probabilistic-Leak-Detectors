@@ -70,7 +70,7 @@ def get_neighbors(index, grid, x, y):
     neighbors = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
     # index = 0 : for finding the neighbors of ' ❌ '  
     if index == 0:
-        return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and grid[nx][ny] != "⬛️" and (grid[nx][ny] == "❌" or grid[nx][ny] == "😀" or grid[nx][ny] == "🟥")]
+        return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and grid[nx][ny] != "⬛️" and grid[nx][ny] != "⬜️" and (grid[nx][ny] == "❌" or grid[nx][ny] == "😀" or grid[nx][ny] == "🟥")]
     # index = 1 : for finding the neighbors of ' ✅ ' 
     if index == 1:
         return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and grid[nx][ny] != "⬛️" and (grid[nx][ny] == "✅" or grid[nx][ny] == "😀")]
