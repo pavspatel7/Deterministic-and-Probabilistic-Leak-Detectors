@@ -45,7 +45,7 @@ class bot1():
                     for (x,y) in detectionGrid:
                         if (x,y) != botpos and (x,y) != self.leakpos_1:
                             grid[x][y] = "❌"
-                
+
                               
                 i,j = botpos
                 neighbors = get_neighbors(0, grid, i,j)
@@ -74,7 +74,6 @@ class bot1():
                 type = False
             else:
                 type = True
-
 
 
             if type:

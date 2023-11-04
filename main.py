@@ -16,8 +16,8 @@ from Probabilistic_Leak_Detectors.botEight import bot8
 from layout import runMain
 
 
-k = 5              # sixe of detector ((2*k) +1)
-sizeOfGrid = 50
+k = 4              # sixe of detector ((2*k) +1)
+sizeOfGrid = 25
 leaks = 1
 
 # grid_with_one_leak, detectionGrid, botpos, leakpos_1  = runMain(k,sizeOfGrid,1)
@@ -26,9 +26,9 @@ leaks = 1
 for i in range(1):
     grid_with_one_leak, botpos, leakpos_1  = runMain(k,sizeOfGrid,leaks)
     # # Bot 1 vs Bot 2
-    bot_1 = bot1(k, grid_with_one_leak, botpos, leakpos_1)
-    print("bot-1")
-    print("BOT-1 == sensor", bot_1.SENSOR ,"moves", bot_1.MOVES, "average:-", (bot_1.SENSOR + bot_1.MOVES) / 2)
+    # bot_1 = bot1(k, grid_with_one_leak, botpos, leakpos_1)
+    # print("bot-1")
+    # print("BOT-1 == sensor", bot_1.SENSOR ,"moves", bot_1.MOVES, "average:-", (bot_1.SENSOR + bot_1.MOVES) / 2)
     
     
     print("bot2")
@@ -43,13 +43,13 @@ for i in range(1):
     
     
     
-    grid_with_two_leak, botpos, leakpos_1, leakpos_2 = runMain(k,sizeOfGrid,2)
+    # grid_with_two_leak, botpos, leakpos_1, leakpos_2 = runMain(k,sizeOfGrid,2)
     
     # bot 5 vs bot 6
-    print("bot5")
-    bot_5_grid = [row.copy() for row in grid_with_two_leak]
-    bot_5 = bot5(k, bot_5_grid, botpos, leakpos_1, leakpos_2)
-    print("BOT-5 == sensor", bot_5.SENSOR ,"moves", bot_5.MOVES, "average:-", (bot_5.SENSOR + bot_5.MOVES) / 2)
+    # print("bot5")
+    # bot_5_grid = [row.copy() for row in grid_with_two_leak]
+    # bot_5 = bot5(k, bot_5_grid, botpos, leakpos_1, leakpos_2)
+    # print("BOT-5 == sensor", bot_5.SENSOR ,"moves", bot_5.MOVES, "average:-", (bot_5.SENSOR + bot_5.MOVES) / 2)
     
     # print("bot6")
     # bot6(grid_with_two_leak, botpos, leakpos_1, leakpos_2)

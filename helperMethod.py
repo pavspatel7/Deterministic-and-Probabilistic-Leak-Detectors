@@ -19,24 +19,6 @@ def CreateDetector(k, grid, botpos):
                 innerGridCells.append((inner_x, inner_y))
     return innerGridCells
 
-# Returns the grid in 2D form used inside the 
-def create_mini_grid(k, grid, botpos):
-    x, y = botpos
-    mini_grid_size = (2*k + 1)
-    half_size = (mini_grid_size )// 2
-
-    min_x = max(0, x - half_size)
-    max_x = min(len(grid[0]) - 1, x + half_size)
-    min_y = max(0, y - half_size)
-    max_y = min(len(grid)-1, y + half_size)
-
-    mini_grid = []
-    for i in range(min_x, max_x + 1):
-        row = []
-        for j in range(min_y, max_y + 1):
-            row.append(grid[i][j])
-        mini_grid.append(row)
-    return mini_grid
 
 def find_shortest_path(index, original_grid, bot_no, start, end):
     queue = deque([(start, [])])
@@ -71,10 +53,14 @@ def get_neighbors(index, grid, x, y):
     # index = 0 : for finding the neighbors of ' ❌ '  
     if index == 0:
         return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and grid[nx][ny] != "⬛️" and grid[nx][ny] != "⬜️" and (grid[nx][ny] == "❌" or grid[nx][ny] == "😀" or grid[nx][ny] == "🟥")]
-    # index = 1 : for finding the neighbors of ' ✅ ' 
+    
+    # index = 1 : for finding the neighbors of ' ✅ '
+        # Used in Bot - 1 :- At..   
     if index == 1:
         return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and grid[nx][ny] != "⬛️" and (grid[nx][ny] == "✅" or grid[nx][ny] == "😀")]
-    # index = 1 : for finding the neighbors of ' ✅ ' 
+    
+    # index = 1 : for finding the neighbors not including the Block cells
+        # Used in Bot - 2 :- At..
     if index == 2:
         return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and grid[nx][ny] != "⬛️"]
 
@@ -91,3 +77,53 @@ def is_outer_detection(grid, x, y):
         if 0 <= nx < len(grid) and 0 <= ny < len(grid) and (grid[nx][ny] == "⬜️" or grid[nx][ny] == "🟥" or grid[nx][ny] == "❌"):
             return True
     return False
+
+
+def out_cells_bot_2(k, grid, botpos):
+
+    tempGrid = [row.copy() for row in grid]
+    # Calculate Outer distance
+    outercell_distance =  k + 1  # Twice the first detection grid
+    temp = outer_detection_cells(tempGrid)
+    outermost_green_cell = []
+    for (x,y) in temp:
+        if  0 <= x < len(tempGrid) and 0 <= y+outercell_distance < len(tempGrid) and tempGrid[x][y] == "✅" and tempGrid[x][y+outercell_distance] == "⬜️":
+            tempGrid[x][y+outercell_distance] = "🔵"
+            outermost_green_cell.append((x,y+outercell_distance))
+        if  0 <= x-outercell_distance < len(tempGrid) and 0 <= y < len(tempGrid) and tempGrid[x][y] == "✅" and tempGrid[x-outercell_distance][y] == "⬜️":
+            tempGrid[x-outercell_distance][y] = "🔵"
+            outermost_green_cell.append((x-outercell_distance,y))
+        if  0 <= x+outercell_distance < len(tempGrid) and 0 <= y < len(tempGrid) and tempGrid[x][y] == "✅" and tempGrid[x+outercell_distance][y] == "⬜️":
+            tempGrid[x+outercell_distance][y] = "🔵"
+            outermost_green_cell.append((x+outercell_distance,y))
+        if  0 <= x < len(tempGrid) and 0 <= y-outercell_distance < len(tempGrid) and tempGrid[x][y] == "✅" and tempGrid[x][y-outercell_distance] == "⬜️":
+            tempGrid[x][y-outercell_distance] = "🔵"
+            outermost_green_cell.append((x,y-outercell_distance))
+
+    print("**********************")
+    for x in tempGrid:
+        print(''.join(x))
+    print("**********************")
+    print()
+
+
+
+    #outermost_green_cell = outer_detection_cells_1(tempGrid)
+    print("outer",outermost_green_cell)
+    return outermost_green_cell
+
+
+def find_min_distance_and_path(your_dict):
+    min_distance = 0 # float('inf')  # Initialize with positive infinity to find the minimum
+    min_distance_path = []
+
+    for key, value in your_dict.items():
+        distance, path = value
+        if distance > 0 and distance > min_distance:
+            min_distance = distance
+            min_distance_path = path
+            #min_distance_key = key
+
+    return min_distance, min_distance_path
+
+
