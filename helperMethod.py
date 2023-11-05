@@ -66,9 +66,14 @@ def get_neighbors(index, grid, x, y):
 
 
 # Give the validity of the move for the BFS
-def is_valid_move_bot(grid,bot_no, x, y):
+def is_valid_move_bot(grid, bot_no, x, y):
     if bot_no == 1:
         return 0 <= x < len(grid) and 0 <= y < len(grid) and grid[x][y] != "⬛️"
+    if bot_no == 2:
+        height = len(grid)
+        width = len(grid[0])
+        return 0 <= x < height and 0 <= y < width and \
+               all(0 <= x + dx < height and 0 <= y + dy < width and grid[x + dx][y + dy] != "✅" for dx, dy in [(-3, 0), (3, 0), (0, -3), (0, 3)])
 
 # This Out detection checks for the out cells of the detection Grid
 def is_outer_detection(grid, x, y):
@@ -79,47 +84,33 @@ def is_outer_detection(grid, x, y):
     return False
 
 
-def out_cells_bot_2(k, grid, botpos):
-
-    tempGrid = [row.copy() for row in grid]
-    # Calculate Outer distance
+def out_cells_bot_2(k, grid):
     outercell_distance =  k + 1  # Twice the first detection grid
-    temp = outer_detection_cells(tempGrid)
+    temp = outer_detection_cells(grid)
     outermost_green_cell = []
     for (x,y) in temp:
-        if  0 <= x < len(tempGrid) and 0 <= y+outercell_distance < len(tempGrid) and tempGrid[x][y] == "✅" and tempGrid[x][y+outercell_distance] == "⬜️":
-            tempGrid[x][y+outercell_distance] = "🔵"
+        if  0 <= x < len(grid) and 0 <= y+outercell_distance < len(grid) and  (grid[x][y+outercell_distance] == "⬜️" or grid[x][y+outercell_distance] == "❌"):
             outermost_green_cell.append((x,y+outercell_distance))
-        if  0 <= x-outercell_distance < len(tempGrid) and 0 <= y < len(tempGrid) and tempGrid[x][y] == "✅" and tempGrid[x-outercell_distance][y] == "⬜️":
-            tempGrid[x-outercell_distance][y] = "🔵"
+        if  0 <= x-outercell_distance < len(grid) and 0 <= y < len(grid) and (grid[x-outercell_distance][y] == "⬜️" or grid[x-outercell_distance][y] == "❌"):
             outermost_green_cell.append((x-outercell_distance,y))
-        if  0 <= x+outercell_distance < len(tempGrid) and 0 <= y < len(tempGrid) and tempGrid[x][y] == "✅" and tempGrid[x+outercell_distance][y] == "⬜️":
-            tempGrid[x+outercell_distance][y] = "🔵"
+        if  0 <= x+outercell_distance < len(grid) and 0 <= y < len(grid) and (grid[x+outercell_distance][y] == "⬜️" or grid[x+outercell_distance][y] == "❌"):
             outermost_green_cell.append((x+outercell_distance,y))
-        if  0 <= x < len(tempGrid) and 0 <= y-outercell_distance < len(tempGrid) and tempGrid[x][y] == "✅" and tempGrid[x][y-outercell_distance] == "⬜️":
-            tempGrid[x][y-outercell_distance] = "🔵"
+        if  0 <= x < len(grid) and 0 <= y-outercell_distance < len(grid) and (grid[x][y-outercell_distance] == "⬜️" or grid[x][y-outercell_distance] == "❌"):
             outermost_green_cell.append((x,y-outercell_distance))
-
-    print("**********************")
-    for x in tempGrid:
-        print(''.join(x))
-    print("**********************")
-    print()
-
-
-
-    #outermost_green_cell = outer_detection_cells_1(tempGrid)
-    print("outer",outermost_green_cell)
-    return outermost_green_cell
+    result = []
+    for (x,y) in outermost_green_cell:
+        if is_valid_move_bot(grid, 2, x,y):
+            result.append((x,y))
+    return result
 
 
 def find_min_distance_and_path(your_dict):
-    min_distance = 0 # float('inf')  # Initialize with positive infinity to find the minimum
+    min_distance = float('inf')  # Initialize with positive infinity to find the minimum
     min_distance_path = []
 
     for key, value in your_dict.items():
         distance, path = value
-        if distance > 0 and distance > min_distance:
+        if distance > 0 and distance < min_distance:
             min_distance = distance
             min_distance_path = path
             #min_distance_key = key
