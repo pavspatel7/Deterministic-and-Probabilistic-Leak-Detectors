@@ -36,17 +36,18 @@ for i in range(1):
     
     # Bot 3 vs Bot 4
     # print("bot3")
-    # bot3(grid_with_one_leak, botpos, leakpos_1)
+    bot_3 = bot3(grid_with_one_leak, botpos, leakpos_1)
     # print("bot4")
     # bot4(grid_with_one_leak, botpos, leakpos_1)
 
-    grid_with_two_leak, botpos, leakpos_1, leakpos_2 = runMain(k,sizeOfGrid,2)
-    # bot 5 vs bot 6
-    bot_5 = bot5(k, grid_with_two_leak, botpos, leakpos_1, leakpos_2)
-    print("BOT-5 == sensor", bot_5.SENSOR ,"moves", bot_5.MOVES, "average:-", (bot_5.SENSOR + bot_5.MOVES) / 2)
+    # grid_with_two_leak, botpos, leakpos_1, leakpos_2 = runMain(k,sizeOfGrid,2)
+    # # bot 5 vs bot 6
+    # bot_5 = bot5(k, grid_with_two_leak, botpos, leakpos_1, leakpos_2)
+    # print("BOT-5 == sensor", bot_5.SENSOR ,"moves", bot_5.MOVES, "average:-", (bot_5.SENSOR + bot_5.MOVES) / 2)
     
-    # print("bot6")
-    # bot6(grid_with_two_leak, botpos, leakpos_1, leakpos_2)
+    # bot_6 = bot6(k, grid_with_two_leak, botpos, leakpos_1, leakpos_2)
+    # print("BOT-6 == sensor", bot_6.SENSOR ,"moves", bot_6.MOVES, "average:-", (bot_6.SENSOR + bot_6.MOVES) / 2)
+    
     
     
     # # bot 7 vs bot 8

@@ -1,12 +1,12 @@
 import random
-from helperMethod import CreateDetector, find_shortest_path, get_neighbors, outer_detection_cells
+from helperMethod import CreateDetector, find_shortest_path, get_neighbors, outer_detection_cells, out_cells_bot_2, find_min_distance_and_path
 
 class bot6():
     
-    def __init__(self, getGrid, detectionGrid, botpos, leakpos_1, leakpos_2):
+    def __init__(self,k, getGrid, botpos, leakpos_1, leakpos_2):
         
         self.grid = getGrid
-        self.detectionGrid = detectionGrid
+        self.k = k
         self.botpos = botpos
         self.leakpos_1 = leakpos_1
         self.leakpos_2 = leakpos_2       
