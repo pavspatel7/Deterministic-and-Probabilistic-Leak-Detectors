@@ -16,8 +16,8 @@ from Probabilistic_Leak_Detectors.botEight import bot8
 from layout import runMain
 
 
-k = 12              # sixe of detector ((2*k) +1)
-sizeOfGrid = 50
+k = 3              # sixe of detector ((2*k) +1)
+sizeOfGrid = 10
 leaks = 1
 avg_1 = 0
 avg_2 = 0
