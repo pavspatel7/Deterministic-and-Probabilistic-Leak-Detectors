@@ -128,24 +128,59 @@ def beep_in_i_given_leak_in_j(a, grid, start, end):
     return result
 
 
+def find_shortest_path_bot3(index, original_grid, bot_no, start, end):
+    queue = deque([(start, [])])
+    visited = set()
+    visited_dfs = set()
+    while queue:
+        (x, y), path = queue.popleft()
+        if (x, y) == end:
+            temp_distance_dict[end] = len(path)
+            return path
+        if (x, y) not in visited:
+            visited.add((x, y))
+            visited_dfs.add((x, y))
+            for nx, ny in get_neighbors(index,original_grid, x, y):
+                if is_valid_move_bot(original_grid, bot_no, nx, ny):
+                    queue.append(((nx, ny), path + [(nx, ny)]))
+            visited_dfs.remove((x, y))
+    return []
+
+
+def get_bfs_len(index, original_grid, bot_no, start, end):
+    if end in temp_distance_dict:
+        return temp_distance_dict[end]
+    else:
+        return len(find_shortest_path_bot3(index, original_grid, bot_no, start, end))
+
+
 def no_beep_in_i_given_leak_in_j(a, grid, start, end):
     return 1 - beep_in_i_given_leak_in_j(a, grid, start, end)
 
 
-
 def prob_leak_given_no_beep(a, grid, cell_probability_dict, botpos):
+    # debug
+    # for key, item in cell_probability_dict.items():
+    #     print(key, item)
+
     denominator = 0
     for key, probability in cell_probability_dict.items():
         x, y = key
         if probability != 0:
             temp = (probability * no_beep_in_i_given_leak_in_j(a, grid, botpos, (x, y)))
             denominator += temp
+    print("denominator", denominator)
+    print(cell_probability_dict)
 
     for key, probability in cell_probability_dict.items():
         x, y = key
         if probability != 0:
             cell_probability_dict[key] = ((probability * no_beep_in_i_given_leak_in_j(a, grid, botpos, (x, y)))
                                           / denominator)
+
+    # debug
+    # for key, item in cell_probability_dict.items():
+    #     print(key, item)
 
     return cell_probability_dict
 
@@ -166,73 +201,38 @@ def prob_leak_given_beep(a, grid, cell_probability_dict, botpos):
 
     return cell_probability_dict
 
-
-def leak_in_j_given_no_leak_in_i(cell_probability_dict):
+''' 
+def leak_in_j_given_no_leak_in_i(cell_probability_dict, botpos):
     tot_sum = 0
+
+    print("-----------cellprobdict", cell_probability_dict[botpos])
+
+    cell_probability_dict[botpos] = 0
     for value in cell_probability_dict.values():
         tot_sum += value
+
+    print("---------------totsum", tot_sum)
+    print("---------------botpron", cell_probability_dict[botpos])
 
     for key, probability in cell_probability_dict.items():
         if probability != 0:
             cell_probability_dict[key] = probability / tot_sum
 
     return cell_probability_dict
-
-
-def find_shortest_path_bot3(index, original_grid, bot_no, start, end):
-    queue = deque([(start, [])])
-    visited = set()
-    visited_dfs = set()
-    while queue:
-        (x, y), path = queue.popleft()
-        if (x, y) == end:
-            temp_distance_dict[end] = len(path)
-            return path
-        if (x, y) not in visited:
-            visited.add((x, y))
-            visited_dfs.add((x, y))
-            for nx, ny in get_neighbors(index,original_grid, x, y):
-                if is_valid_move_bot(original_grid, bot_no, nx, ny):
-                    queue.append(((nx, ny), path + [(nx, ny)]))
-            visited_dfs.remove((x, y))
-    return []
-
-def get_bfs_len(index, original_grid, bot_no, start, end):
-    if end in temp_distance_dict:
-        return temp_distance_dict[end]
-    else:
-        return len(find_shortest_path_bot3(index, original_grid, bot_no, start, end))
 '''
-def prob_leak_given_no_beep(a, grid, cell_probability_dict, botpos):
-    denominator = 0
-    for x in range(len(grid)):
-        for y in range(len(grid)):
-            if cell_probability_dict[x][y] != 0:
-                temp = (cell_probability_dict[x][y] *
-                        no_beep_in_i_given_leak_in_j(a, grid, botpos, (x, y)))
-                denominator += temp
-    for x in range(len(grid)):
-        for y in range(len(grid)):
-            if cell_probability_dict[x][y] != 0:
-                cell_probability_dict[x][y] = ((cell_probability_dict[x][y] *
-                                               no_beep_in_i_given_leak_in_j(a, grid, botpos, (x, y)))
-                                               / denominator)
+
+def leak_in_j_given_no_leak_in_i(cell_probability_dict, botpos):
+    leak_in_i = cell_probability_dict[botpos]
+    cell_probability_dict[botpos] = 0
+    denominator = 1 - leak_in_i
+
+    print("----------------------------------------B {:.10f}".format(leak_in_i))
+    # for key, item in cell_probability_dict.items():
+    #     print(key, item)
+
+    for key, probability in cell_probability_dict.items():
+        if probability != 0:
+            cell_probability_dict[key] = probability / denominator
+
     return cell_probability_dict
 
-
-def prob_leak_given_beep(a, grid, cell_probability_dict, botpos):
-    denominator = 0
-    for x in range(len(grid)):
-        for y in range(len(grid)):
-            if cell_probability_dict[x][y] != 0:
-                temp = (cell_probability_dict[x][y] *
-                        beep_in_i_given_leak_in_j(a, grid, botpos, (x, y)))
-                denominator += temp
-    for x in range(len(grid)):
-        for y in range(len(grid)):
-            if cell_probability_dict[x][y] != 0:
-                cell_probability_dict[x][y] = ((cell_probability_dict[x][y] *
-                                                beep_in_i_given_leak_in_j(a, grid, botpos, (x, y)))
-                                               / denominator)
-    return cell_probability_dict
-'''
