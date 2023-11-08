@@ -17,8 +17,8 @@ from layout import runMain
 
 
 k = 3              # size of detector ((2*k) +1)
-alpha = 0.7        # value of alpha for bot 3, bot 4
-sizeOfGrid = 30
+alpha = 0.1        # value of alpha for bot 3, bot 4
+sizeOfGrid = 50
 leaks = 1
 avg_1 = 0
 avg_2 = 0
@@ -38,8 +38,10 @@ for i in range(1):
     # Bot 3 vs Bot 4
     # print("bot3")
     bot_3 = bot3(grid_with_one_leak, botpos, leakpos_1, alpha)
+    print("BOT-3 == sensor", bot_3.SENSOR ,"moves", bot_3.MOVES, "average:-", (bot_3.SENSOR + bot_3.MOVES) / 2)
     # print("bot4")
-    # bot4(grid_with_one_leak, botpos, leakpos_1, alpha)
+    bot_4 = bot4(grid_with_one_leak, botpos, leakpos_1, alpha)
+    print("BOT-4 == sensor", bot_4.SENSOR ,"moves", bot_4.MOVES, "average:-", (bot_4.SENSOR + bot_4.MOVES) / 2)
 
     # grid_with_two_leak, botpos, leakpos_1, leakpos_2 = runMain(k,sizeOfGrid,2)
     # # bot 5 vs bot 6

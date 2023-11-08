@@ -169,18 +169,12 @@ def prob_leak_given_no_beep(a, grid, cell_probability_dict, botpos):
         if probability != 0:
             temp = (probability * no_beep_in_i_given_leak_in_j(a, grid, botpos, (x, y)))
             denominator += temp
-    print("denominator", denominator)
-    print(cell_probability_dict)
 
     for key, probability in cell_probability_dict.items():
         x, y = key
         if probability != 0:
             cell_probability_dict[key] = ((probability * no_beep_in_i_given_leak_in_j(a, grid, botpos, (x, y)))
                                           / denominator)
-
-    # debug
-    # for key, item in cell_probability_dict.items():
-    #     print(key, item)
 
     return cell_probability_dict
 
@@ -201,38 +195,13 @@ def prob_leak_given_beep(a, grid, cell_probability_dict, botpos):
 
     return cell_probability_dict
 
-''' 
-def leak_in_j_given_no_leak_in_i(cell_probability_dict, botpos):
-    tot_sum = 0
 
-    print("-----------cellprobdict", cell_probability_dict[botpos])
-
-    cell_probability_dict[botpos] = 0
-    for value in cell_probability_dict.values():
-        tot_sum += value
-
-    print("---------------totsum", tot_sum)
-    print("---------------botpron", cell_probability_dict[botpos])
-
-    for key, probability in cell_probability_dict.items():
-        if probability != 0:
-            cell_probability_dict[key] = probability / tot_sum
-
-    return cell_probability_dict
-'''
-
-def leak_in_j_given_no_leak_in_i(cell_probability_dict, botpos):
-    leak_in_i = cell_probability_dict[botpos]
+def leak_in_j_given_no_leak_in_i(cell_probability_dict, botpos, leak_in_i):
     cell_probability_dict[botpos] = 0
     denominator = 1 - leak_in_i
-
-    print("----------------------------------------B {:.10f}".format(leak_in_i))
-    # for key, item in cell_probability_dict.items():
-    #     print(key, item)
 
     for key, probability in cell_probability_dict.items():
         if probability != 0:
             cell_probability_dict[key] = probability / denominator
 
     return cell_probability_dict
-
