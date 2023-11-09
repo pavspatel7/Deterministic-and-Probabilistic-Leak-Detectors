@@ -1,5 +1,4 @@
 from collections import deque
-from sortedcontainers import SortedDict
 
 temp_distance_dict = {}
 
