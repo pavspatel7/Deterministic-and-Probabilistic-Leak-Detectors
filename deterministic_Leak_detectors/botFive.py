@@ -140,7 +140,7 @@ class bot5():
             
             
             # Print Layout
-            if self.debug == 1:
+            if self.debug == 0:
                 print(botpos, self.leakpos_1)
                 for x in grid:
                     print(''.join(x))
