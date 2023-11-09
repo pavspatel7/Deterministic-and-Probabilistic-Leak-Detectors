@@ -2,7 +2,6 @@ import random
 from helperMethod import CreateDetector, find_shortest_path, get_neighbors, outer_detection_cells, out_cells_bot_2, find_min_distance_and_path
 
 class bot6():
-    
     def __init__(self,k, getGrid, botpos, leakpos_1, leakpos_2):
         
         self.grid = getGrid
@@ -11,17 +10,17 @@ class bot6():
         self.leakpos_1 = leakpos_1
         self.leakpos_2 = leakpos_2       
         self.bot_6_grid = [row.copy() for row in self.grid]
-        
-        for x in self.grid:
-            print(''.join(x))
-        print()
-        
-        self.bot_6_grid(self.bot_6_grid, self.botpos)
+        self.SENSOR = 0
+        self.MOVES = 0
+        self.debug = 0
+        self.combination_dict = self.get_dict(self.bot_6_grid)
+        self.task_for_bot6(self.bot_6_grid, self.botpos)
+
         
         
     def task_for_bot6(self, grid, bot_pos):
         t=0
-        g=0
+        m=0
         leak = 1
         outcell_dict = {}
         botpos = bot_pos
@@ -29,7 +28,20 @@ class bot6():
         type = True
         negative_cells = []
 
-        while botpos != self.leakpos_1:
+        while True:
+            print(len(self.combination_dict))
+            print("_______________________________",self.leakpos_1, self.leakpos_2)
+            print(self.combination_dict)
+            if botpos == self.leakpos_1 and leak == 2:
+                break
+            if botpos == self.leakpos_2 and leak == 2:
+                break
+            if botpos == self.leakpos_1 and leak == 1:
+                self.leakpos_1 = (99,99)
+                leak+=1                
+            if botpos == self.leakpos_2 and leak == 1:
+                self.leakpos_2 = (99,99)
+                leak+=1
             
             # Print Layout
             if self.debug == 1:
@@ -45,19 +57,24 @@ class bot6():
           
             # Sense the action of the leak in detection grid or not  
             self.SENSOR += 1
-            if self.leakpos_1 in detectionGrid:
-
-                t+=1
-                if t == 1:
-                    for (x,y) in detectionGrid:
-                        if (x,y) != botpos and (x,y) != self.leakpos_1:
-                            if grid[x][y] != "✅":
-                                grid[x][y] = "❌"
-                    for x in range(len(grid)):
-                        for y in range(len(grid)):
-                            if grid[x][y] == "⬜️":
-                                grid[x][y] = "✅" 
-         
+            if (self.leakpos_1 in detectionGrid) or (self.leakpos_2 in detectionGrid):
+                
+                if self.leakpos_1 in detectionGrid:
+                    t+=1
+                    if t == 1:
+                        for (x,y) in detectionGrid:
+                            if (x,y) != botpos and (x,y) != self.leakpos_1:
+                                if grid[x][y] != "✅":
+                                    grid[x][y] = "❌"
+                
+                if self.leakpos_2 in detectionGrid:
+                    m+=1
+                    if m == 1:
+                        for (x,y) in detectionGrid:
+                            if (x,y) != botpos and (x,y) != self.leakpos_1:
+                                if grid[x][y] != "✅":
+                                    grid[x][y] = "❌"
+                
                 i,j = botpos
                 neighbors = get_neighbors(0, grid, i,j)
                 grid[x_bot][y_bot] = "✅"
@@ -71,6 +88,7 @@ class bot6():
                         for y in range(len(grid)):
                             if grid[x][y] == "❌" or grid[x][y] == "🟥":
                                 negative_cells.append((x,y))
+                                
                     for item in negative_cells:
                         l = find_shortest_path(2, grid ,1 ,botpos, item)
                         if l:
@@ -87,11 +105,17 @@ class bot6():
                 type = True
 
             if type:
-
+                
                 for (x,y) in detectionGrid:
                     if (x,y) != botpos and (x,y) != self.leakpos_1:
                         grid[x][y] = "✅"
-
+                
+                for combination in list(self.combination_dict.keys()):
+                    if all (cells in detectionGrid for cells in combination):
+                        continue
+                    else:
+                        del self.combination_dict[combination]
+                
                 # If not then find the next position for the bot
                 x_bot, y_bot = botpos
                 outcell_dict = {}
@@ -112,15 +136,41 @@ class bot6():
 
                     d,p = find_min_distance_and_path(outcell_dict)
                     
-                    if self.leakpos_1 in p:
-                        for (x,y) in p:
-                            c = (x,y)
-                            if c != self.leakpos_1:
-                                grid[x][y] = "😀"
-                                self.MOVES+=1
-                            else:
-                                break
-                        
+                    if self.leakpos_1 in p or self.leakpos_2 in p:
+                        if self.leakpos_1 in p and self.leakpos_2 in p:
+                            for (x,y) in p:
+                                c = (x,y)
+                                if c != self.leakpos_1 and c!= self.leakpos_2:
+                                    grid[x][y] = "😀"
+                                    self.MOVES+=1
+                                else:
+                                    self.leakpos_1 = (99,99)
+                                    self.leakpos_2 = (99,99)
+                                    leak = 2
+                                    break
+                        if self.leakpos_1 in p:
+                            for (x,y) in p:
+                                c = (x,y)
+                                if c != self.leakpos_1:
+                                    grid[x][y] = "😀"
+                                    self.MOVES+=1
+                                else:
+                                    self.leakpos_1 = (99,99)
+                                    leak+=1
+                                    break
+                        if self.leakpos_2 in p:
+                            for (x,y) in p:
+                                c = (x,y)
+                                if c != self.leakpos_2:
+                                    grid[x][y] = "😀"
+                                    self.MOVES+=1
+                                else:
+                                    self.leakpos_2 = (99,99)
+                                    leak+=1
+                                    break            
+                        if leak == 3:
+                            break        
+                                
                         if self.debug == 1:
                             for x in grid:
                                 print(''.join(x))
@@ -170,11 +220,23 @@ class bot6():
                 print()
                 print(self.MOVES, self.SENSOR)
         
-        
-        
     def get_open(self,  grid, bot):
         x,y = bot
         neighbors = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
         # Open Cells
         return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and (grid[nx][ny] == "⬜️" or grid[nx][ny] == "🟥" or grid[nx][ny] == "❌")]
 
+    def get_dict(self, grid):
+        my_dict = {}
+        used_cells = set() 
+        for x in range(len(grid)):
+            for y in range(len(grid)):
+                if grid[x][y] != "⬛️":
+                    for i in range(len(grid)):
+                        for j in range(len(grid)):
+                            if (x, y) != (i, j) and grid[i][j] != "⬛️":
+                                # Check if both pairs contain the same cells in any order
+                                if ((x, y), (i, j)) not in used_cells and ((i, j), (x, y)) not in used_cells:
+                                    my_dict[((x, y), (i, j))] = 1
+                                    used_cells.add(((x, y), (i, j)) )  # Add the used cell pair to the set
+        return my_dict
