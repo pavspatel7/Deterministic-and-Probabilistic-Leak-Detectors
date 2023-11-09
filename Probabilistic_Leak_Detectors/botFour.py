@@ -41,7 +41,6 @@ class bot4():
                 cell_probability_dict[items] = 1 / opent
 
         while botpos != self.leakpos_1:
-
             if nobeepflag:
                 check = 1
             else:

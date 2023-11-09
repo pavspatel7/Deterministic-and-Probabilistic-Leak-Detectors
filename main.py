@@ -1,4 +1,13 @@
 import random
+import openpyxl
+
+workbook = openpyxl.Workbook()
+sheet = workbook.active
+sheet['A1'] = 'Sensor bot3'
+sheet['B1'] = 'Moves bot3'
+sheet['C1'] = 'Sensor bot4'
+sheet['D1'] = 'Moves bot4'
+row = 2
 
 # Deterministic Leak Detectors
 from deterministic_Leak_detectors.botOne import bot1
@@ -17,7 +26,7 @@ from layout import runMain
 
 
 k = 3              # size of detector ((2*k) +1)
-alpha = 0.1        # value of alpha for bot 3, bot 4
+alpha = 0.95       # value of alpha for bot 3, bot 4
 sizeOfGrid = 50
 leaks = 1
 avg_1 = 0
@@ -26,7 +35,8 @@ timer = 0
 # grid_with_one_leak, detectionGrid, botpos, leakpos_1  = runMain(k,sizeOfGrid,1)
 # grid_with_two_leak, detectionGrid, botpos, leakpos_1, leakpos_2 = runMain(k,sizeOfGrid,2)
 
-for i in range(1):
+count = 0
+while count < 50:
     grid_with_one_leak, botpos, leakpos_1  = runMain(k,sizeOfGrid,leaks)
     # Bot 1 vs Bot 2
     # bot_1 = bot1(k, grid_with_one_leak, botpos, leakpos_1)
@@ -38,10 +48,17 @@ for i in range(1):
     # Bot 3 vs Bot 4
     # print("bot3")
     bot_3 = bot3(grid_with_one_leak, botpos, leakpos_1, alpha)
-    print("BOT-3 == sensor", bot_3.SENSOR ,"moves", bot_3.MOVES, "average:-", (bot_3.SENSOR + bot_3.MOVES) / 2)
+    print("BOT3 =>   sensor: ", bot_3.SENSOR, "  moves: ", bot_3.MOVES, "  action_sum: ", bot_3.SENSOR+bot_3.MOVES)
     # print("bot4")
     bot_4 = bot4(grid_with_one_leak, botpos, leakpos_1, alpha)
-    print("BOT-4 == sensor", bot_4.SENSOR ,"moves", bot_4.MOVES, "average:-", (bot_4.SENSOR + bot_4.MOVES) / 2)
+    print("BOT4 =>   sensor: ", bot_4.SENSOR, "  moves: ", bot_4.MOVES, "  action_sum: ", bot_4.SENSOR+bot_4.MOVES)
+
+    # Write data into the Excel file
+    sheet[f'A{row}'] = bot_3.SENSOR
+    sheet[f'B{row}'] = bot_3.MOVES
+    sheet[f'C{row}'] = bot_4.SENSOR
+    sheet[f'D{row}'] = bot_4.MOVES
+    row += 1
 
     # grid_with_two_leak, botpos, leakpos_1, leakpos_2 = runMain(k,sizeOfGrid,2)
     # # bot 5 vs bot 6
@@ -60,12 +77,30 @@ for i in range(1):
     # bot8(grid_with_two_leak, botpos, leakpos_1, leakpos_2)
 
 
-'''
+    avg_1 += bot_3.SENSOR + bot_3.MOVES
+    avg_2 += bot_4.SENSOR + bot_4.MOVES
 
-    avg_1 += ((bot_1.SENSOR + bot_1.MOVES) / 2)
-    avg_2 += ((bot_2.SENSOR + bot_2.MOVES) / 2)  
-    print("Bot1 -", avg_1)
-    print("Bot2 -", avg_2)  
+    count += 1
+    if count == 49:
+        avg_1 = avg_1 / 50
+        avg_2 = avg_2 / 50
+        print("Bot3 final avg -", avg_1)
+        print("Bot4 final avg -", avg_2)
+        print()
+        print()
+        avg_1 = 0
+        avg_2 = 0
+        row += 5
+        alpha -= 0.05
+        print("alpha", alpha)
+        print()
+        if alpha == 0:
+            print()
+            print("data collected")
+            break
+        else:
+            count = 0
 
-'''
 
+workbook.save('output.xlsx')
+workbook.close()
