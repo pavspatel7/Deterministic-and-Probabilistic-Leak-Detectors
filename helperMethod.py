@@ -119,12 +119,22 @@ def find_min_distance_and_path(your_dict):
     return min_distance, min_distance_path
 
 
-def beep_in_i_given_leak_in_j(a, grid, start, end):
-    e = 2.71828
-    result = 0
-    power = -1 * a * (get_bfs_len(2, grid, 1, start, end) - 1)
-    result = pow(e, power)
-    return result
+def all_distances_bfs(index, original_grid, bot_no, start):
+    queue = deque([(start, 0)])
+    distances = {start: 0}
+
+    while queue:
+        (x, y), current_distance = queue.popleft()
+
+        for nx, ny in get_neighbors(index, original_grid, x, y):
+            if is_valid_move_bot(original_grid, bot_no, nx, ny):
+                new_distance = current_distance + 1
+
+                if (nx, ny) not in distances or new_distance < distances[(nx, ny)]:
+                    distances[(nx, ny)] = new_distance
+                    queue.append(((nx, ny), new_distance))
+
+    return distances
 
 
 def find_shortest_path_bot3(index, original_grid, bot_no, start, end):
@@ -146,50 +156,48 @@ def find_shortest_path_bot3(index, original_grid, bot_no, start, end):
     return []
 
 
-def get_bfs_len(index, original_grid, bot_no, start, end):
-    if end in temp_distance_dict:
-        return temp_distance_dict[end]
-    else:
-        return len(find_shortest_path_bot3(index, original_grid, bot_no, start, end))
+def beep_in_i_given_leak_in_j(a, grid, start, end, distances):
+    e = 2.71828
+    result = 0
+    d = distances.get(end, float('inf'))
+    power = -1 * a * (d - 1)
+    result = pow(e, power)
+    return result
 
 
-def no_beep_in_i_given_leak_in_j(a, grid, start, end):
-    return 1 - beep_in_i_given_leak_in_j(a, grid, start, end)
+def no_beep_in_i_given_leak_in_j(a, grid, start, end, distances):
+    return 1 - beep_in_i_given_leak_in_j(a, grid, start, end, distances)
 
 
-def prob_leak_given_no_beep(a, grid, cell_probability_dict, botpos):
-    # debug
-    # for key, item in cell_probability_dict.items():
-    #     print(key, item)
-
+def prob_leak_given_no_beep(a, grid, cell_probability_dict, botpos, distances):
     denominator = 0
     for key, probability in cell_probability_dict.items():
         x, y = key
         if probability != 0:
-            temp = (probability * no_beep_in_i_given_leak_in_j(a, grid, botpos, (x, y)))
+            temp = (probability * no_beep_in_i_given_leak_in_j(a, grid, botpos, (x, y), distances))
             denominator += temp
 
     for key, probability in cell_probability_dict.items():
         x, y = key
         if probability != 0:
-            cell_probability_dict[key] = ((probability * no_beep_in_i_given_leak_in_j(a, grid, botpos, (x, y)))
+            cell_probability_dict[key] = ((probability * no_beep_in_i_given_leak_in_j(a, grid, botpos, (x, y), distances))
                                           / denominator)
 
     return cell_probability_dict
 
 
-def prob_leak_given_beep(a, grid, cell_probability_dict, botpos):
+def prob_leak_given_beep(a, grid, cell_probability_dict, botpos, distances):
     denominator = 0
     for key, probability in cell_probability_dict.items():
         x, y = key
         if probability != 0:
-            temp = (probability * beep_in_i_given_leak_in_j(a, grid, botpos, (x, y)))
+            temp = (probability * beep_in_i_given_leak_in_j(a, grid, botpos, (x, y), distances))
             denominator += temp
 
     for key, probability in cell_probability_dict.items():
         x, y = key
         if probability != 0:
-            cell_probability_dict[key] = ((probability * beep_in_i_given_leak_in_j(a, grid, botpos, (x, y)))
+            cell_probability_dict[key] = ((probability * beep_in_i_given_leak_in_j(a, grid, botpos, (x, y), distances))
                                           / denominator)
 
     return cell_probability_dict

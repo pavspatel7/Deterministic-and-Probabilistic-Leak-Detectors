@@ -41,10 +41,15 @@ class bot4():
                 cell_probability_dict[items] = 1 / opent
 
         while botpos != self.leakpos_1:
+
+            # precalculate distances from botpos to all other locations
+            distances = all_distances_bfs(2, grid, 1, botpos)
+            if debug: print(distances)
+
             if nobeepflag:
                 check = 1
             else:
-                check = 10
+                check = 5
 
             # P(leak in j | leak not in i)
             cell_probability_dict = leak_in_j_given_no_leak_in_i(cell_probability_dict, botpos, leak_in_i)
@@ -56,7 +61,7 @@ class bot4():
             while count < check:
                 self.SENSOR += 1
                 # P(beep in i | leak in leak location)
-                curr_beep_prob = beep_in_i_given_leak_in_j(alpha, grid, botpos, self.leakpos_1)
+                curr_beep_prob = beep_in_i_given_leak_in_j(alpha, grid, botpos, self.leakpos_1, distances)
                 # generate a random number to compare
                 rand = random.uniform(0, 1)
 
@@ -70,20 +75,20 @@ class bot4():
 
             if curr_beep_prob >= rand:
                 if debug: print("beep")
-                cell_probability_dict = prob_leak_given_beep(alpha, grid, cell_probability_dict, botpos)
+                cell_probability_dict = prob_leak_given_beep(alpha, grid, cell_probability_dict, botpos, distances)
             else:
                 if debug: print("no beep")
-                cell_probability_dict = prob_leak_given_no_beep(alpha, grid, cell_probability_dict, botpos)
+                cell_probability_dict = prob_leak_given_no_beep(alpha, grid, cell_probability_dict, botpos, distances)
 
             # plan a path towards high probability with short path from botpos in grid
             max_value = max(cell_probability_dict.values())
             max_keys = [k for k, v in cell_probability_dict.items() if v == max_value]
             min_path_len = float('inf')
             for key in max_keys:
-                path_len = get_bfs_len(2, grid, 1, botpos, key)
+                path_len = distances.get(key, float('inf'))
                 if min_path_len > path_len:
                     min_path_len = path_len
-            max_keys_w_min_len = [k for k in max_keys if get_bfs_len(2, grid, 1, botpos, k) == min_path_len]
+            max_keys_w_min_len = [k for k in max_keys if distances.get(k, float('inf')) == min_path_len]
             end_a, end_b = max_keys_w_min_len[random.randint(0, len(max_keys_w_min_len) - 1)]
             path = find_shortest_path_bot3(2, grid, 1, botpos, (end_a, end_b))
 
