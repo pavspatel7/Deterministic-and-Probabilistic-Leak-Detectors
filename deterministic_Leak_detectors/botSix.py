@@ -60,8 +60,8 @@ class bot6():
                 for key in keys_to_delete:
                     del self.combination_dict[key]
                 
-                # for keys, items in self.combination_dict.items():
-                #     print(keys, items)
+                for keys, items in self.combination_dict.items():
+                    print(keys, items)
                 
                 self.checking = True
                 self.leakFound = True
@@ -83,8 +83,8 @@ class bot6():
                 for key in keys_to_delete:
                     del self.combination_dict[key]
                 
-                # for keys, items in self.combination_dict.items():
-                #     print(keys, items)
+                for keys, items in self.combination_dict.items():
+                    print(keys, items)
 
                 self.leakFound = True
                 self.checking = True
