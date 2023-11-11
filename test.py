@@ -1,63 +1,112 @@
-# import heapq
+import random
+import openpyxl
 
-# def dijkstra(grid, source, target):
-#     rows = len(grid)
-#     cols = len(grid[0])
-#     distances = [[float('inf')] * cols for _ in range(rows)]
-#     distances[source[0]][source[1]] = 0
-#     pq = [(0, source)]
+workbook = openpyxl.Workbook()
+sheet = workbook.active
+sheet['A1'] = 'Sensor bot7'
+sheet['B1'] = 'Moves bot7'
+sheet['C1'] = 'Sensor bot8'
+sheet['D1'] = 'Moves bot8'
+row = 2
 
-#     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+# Deterministic Leak Detectors
+from deterministic_Leak_detectors.botOne import bot1
+from deterministic_Leak_detectors.botTwo import bot2
+from deterministic_Leak_detectors.botFive import bot5
+from deterministic_Leak_detectors.botSix import bot6
 
-#     while pq:
-#         dist, (x, y) = heapq.heappop(pq)
+# Probability Leak Detectors
+from Probabilistic_Leak_Detectors.botThree import bot3
+from Probabilistic_Leak_Detectors.botFour import bot4
+from Probabilistic_Leak_Detectors.botSeven import bot7
+from Probabilistic_Leak_Detectors.botEight import bot8
 
-#         for dx, dy in directions:
-#             nx, ny = x + dx, y + dy
+# Layout
+from layout import runMain
 
-#             if 0 <= nx < rows and 0 <= ny < cols and grid[nx][ny] == "O":
-#                 new_dist = distances[x][y] + 1  # Assuming each step has a weight of 1
+k = 3               # size of detector ((2*k) +1)
+alpha = 0           # value of alpha for bot 3, bot 4
+sizeOfGrid = 50
+leaks = 1
+avg_1 = 0
+avg_2 = 0
+timer = 0
 
-#                 if new_dist < distances[nx][ny]:
-#                     distances[nx][ny] = new_dist
-#                     heapq.heappush(pq, (new_dist, (nx, ny)))
+print("alpha 0 to 1, bot 4 repeat 3 times each step after beep found, 200 obs")
+count = 0
+while count < 200:
 
-#     # Check if the target is reachable
-#     if distances[target[0]][target[1]] == float('inf'):
-#         return "Target is not reachable"
 
-#     return distances[target[0]][target[1]]
+    # grid_with_one_leak, botpos, leakpos_1 = runMain(k, sizeOfGrid, leaks)
 
-# grid = [
-#     ["O", "B", "G"],
-#     ["O", "B", "O"],
-#     ["O", "O", "O"]
-# ]
+    # Bot 1 vs Bot 2
+    # bot_1 = bot1(k, grid_with_one_leak, botpos, leakpos_1)
+    # print("BOT-1 == sensor", bot_1.SENSOR ,"moves", bot_1.MOVES, "average:-", (bot_1.SENSOR + bot_1.MOVES) / 2)
+    # bot_2 = bot2(k, grid_with_one_leak, botpos, leakpos_1)
+    # print("BOT-2 == sensor", bot_2.SENSOR ,"moves", bot_2.MOVES, "average:-", (bot_2.SENSOR + bot_2.MOVES) / 2)
 
-# source_cell = (0, 0)
-# target_cell = (0, 2)
+    # Bot 3 vs Bot 4
+    # bot_3 = bot3(grid_with_one_leak, botpos, leakpos_1, alpha)
+    # print("BOT3 =>   sensor: ", bot_3.SENSOR, "  moves: ", bot_3.MOVES, "  action_sum: ", bot_3.SENSOR + bot_3.MOVES)
+    # bot_4 = bot4(grid_with_one_leak, botpos, leakpos_1, alpha)
+    # print("BOT4 =>   sensor: ", bot_4.SENSOR, "  moves: ", bot_4.MOVES, "  action_sum: ", bot_4.SENSOR + bot_4.MOVES)
 
-# distance = dijkstra(grid, source_cell, target_cell)
-# if distance != "Target is not reachable":
-#     print(f"Shortest distance to the target: {distance}")
-# else:
-#     print("Target is not reachable")
+    # Write data into the Excel file
+    # sheet[f'A{row}'] = bot_3.SENSOR
+    # sheet[f'B{row}'] = bot_3.MOVES
+    # sheet[f'C{row}'] = bot_4.SENSOR
+    # sheet[f'D{row}'] = bot_4.MOVES
+    # row += 1
 
-def get_dict(self, grid):
-    my_dict = {}
-    used_cells = set()
-    grid_len = len(grid)
+    grid_with_two_leak, botpos, leakpos_1, leakpos_2 = runMain(k,sizeOfGrid,2)
 
-    for x in range(grid_len):
-        for y in range(grid_len):
-            cell_x_y = (x, y)
-            if grid[x][y] != "⬛️":
-                for i in range(x, grid_len):
-                    for j in range(y, grid_len):
-                        cell_i_j = (i, j)
-                        if grid[i][j] != "⬛️" and cell_x_y != cell_i_j:
-                            if ((cell_x_y, cell_i_j) not in used_cells and
-                                    (cell_i_j, cell_x_y) not in used_cells):
-                                my_dict[(cell_x_y, cell_i_j)] = 1
-                                used_cells.add((cell_x_y, cell_i_j))
-    return my_dict
+    # # bot 5 vs bot 6
+    # bot_5 = bot5(k, grid_with_two_leak, botpos, leakpos_1, leakpos_2)
+    # print("BOT-5 == sensor", bot_5.SENSOR ,"moves", bot_5.MOVES, "average:-", (bot_5.SENSOR + bot_5.MOVES) / 2)
+
+    # bot_6 = bot6(k, grid_with_two_leak, botpos, leakpos_1, leakpos_2)
+    # print("BOT-6 == sensor", bot_6.SENSOR ,"moves", bot_6.MOVES, "average:-", (bot_6.SENSOR + bot_6.MOVES) / 2)
+
+    # # bot 7 vs bot 8
+    bot_7 = bot7(grid_with_two_leak, botpos, leakpos_1, leakpos_2, alpha)
+    print("BOT7 =>   sensor: ", bot_7.SENSOR, "  moves: ", bot_7.MOVES, "  action_sum: ", bot_7.SENSOR + bot_7.MOVES)
+    bot_8 = bot8(grid_with_two_leak, botpos, leakpos_1, leakpos_2, alpha)
+    print("BOT8 =>   sensor: ", bot_8.SENSOR, "  moves: ", bot_8.MOVES, "  action_sum: ", bot_8.SENSOR + bot_8.MOVES)
+
+    # Calculate avg
+    avg_1 += bot_7.SENSOR + bot_7.MOVES
+    avg_2 += bot_8.SENSOR + bot_8.MOVES
+
+    count += 1
+    if count == 199:
+        avg_1 = avg_1 / 200
+        avg_2 = avg_2 / 200
+        print("Bot7 final avg -", avg_1)
+        print("Bot8 final avg -", avg_2)
+
+        row += 1
+        sheet[f'A{row}'] = avg_1
+        row += 1
+        sheet[f'A{row}'] = avg_2
+
+        print()
+        print()
+        print()
+        print()
+        print()
+        print()
+        avg_1 = 0
+        avg_2 = 0
+        row += 5
+        alpha += 0.05
+        print("alpha", alpha)
+        print()
+        if alpha >= 1.02:
+            print()
+            print("data collected")
+            break
+        else:
+            count = 0
+
+workbook.save('bot_7_8_report.xlsx')
+workbook.close()

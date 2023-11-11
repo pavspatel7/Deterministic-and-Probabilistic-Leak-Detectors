@@ -1,5 +1,6 @@
 import random
-from helperMethod import CreateDetector, find_shortest_path, get_neighbors, outer_detection_cells, out_cells_bot_2, find_min_distance_and_path
+from types import NoneType
+from helperMethod import *
 
 class bot6():
     def __init__(self,k, getGrid, botpos, leakpos_1, leakpos_2):
@@ -14,8 +15,14 @@ class bot6():
         self.MOVES = 0
         self.debug = 0
         self.combination_dict = self.get_dict(self.bot_6_grid)
-        self.task_for_bot6(self.bot_6_grid, self.botpos)
+        self.potential_leak_1 = []
+        self.potential_leak_2 = []
+        self.leakFound = False
+        self.flag = False
+        self.yes = False
 
+        self.task_for_bot6(self.bot_6_grid, self.botpos)
+        
         
         
     def task_for_bot6(self, grid, bot_pos):
@@ -27,19 +34,60 @@ class bot6():
         detectionGrid = []
         type = True
         negative_cells = []
-
+        Alldone = []
+        self.checking = False
         while True:
-            print(len(self.combination_dict))
-            print("_______________________________",self.leakpos_1, self.leakpos_2)
-            print(self.combination_dict)
+            # print("--------------------------------------------------------------------")
+
+
             if botpos == self.leakpos_1 and leak == 2:
+                print("both found in 1")
                 break
             if botpos == self.leakpos_2 and leak == 2:
+                print("both found in 2")
                 break
             if botpos == self.leakpos_1 and leak == 1:
+                print("leak 1 found")
+                keys_to_delete = []
+                
+                for combination in list(self.combination_dict.keys()):
+                    if self.leakpos_1 == combination[0]:
+                        self.combination_dict[combination] = 10
+                        continue
+                    else:
+                        keys_to_delete.append(combination)
+
+                for key in keys_to_delete:
+                    del self.combination_dict[key]
+                
+                # for keys, items in self.combination_dict.items():
+                #     print(keys, items)
+                
+                self.checking = True
+                self.leakFound = True
                 self.leakpos_1 = (99,99)
-                leak+=1                
+                leak+=1
+                                
             if botpos == self.leakpos_2 and leak == 1:
+                print("leak 2 found")
+                # self.delete_combinations(self.leakpos_2)
+                keys_to_delete = []
+                
+                for combination in list(self.combination_dict.keys()):
+                    if self.leakpos_2 == combination[0]:
+                        self.combination_dict[combination] = 10
+                        continue
+                    else:
+                        keys_to_delete.append(combination)
+
+                for key in keys_to_delete:
+                    del self.combination_dict[key]
+                
+                # for keys, items in self.combination_dict.items():
+                #     print(keys, items)
+
+                self.leakFound = True
+                self.checking = True
                 self.leakpos_2 = (99,99)
                 leak+=1
             
@@ -48,13 +96,16 @@ class bot6():
                 for x in grid:
                     print(''.join(x))
                 print()
-                print(self.MOVES, self.SENSOR)
+                # print(self.MOVES, self.SENSOR)
+            if leak == 3:
+                print("break up")
+                break
 
             # Everytime detection Grid Reset
             detectionGrid = []
             # Get the detction Grid using CreateDetector which takes an input of value k, 
             detectionGrid = CreateDetector(self.k, grid, botpos)
-          
+
             # Sense the action of the leak in detection grid or not  
             self.SENSOR += 1
             if (self.leakpos_1 in detectionGrid) or (self.leakpos_2 in detectionGrid):
@@ -64,31 +115,68 @@ class bot6():
                     if t == 1:
                         for (x,y) in detectionGrid:
                             if (x,y) != botpos and (x,y) != self.leakpos_1:
-                                if grid[x][y] != "✅":
+                                if grid[x][y] != "✅" and grid[x][y] != "🟥":
                                     grid[x][y] = "❌"
+                                    
+                    if self.checking:
+                        for x in range(len(grid)):
+                            for y in range(len(grid)):
+                                if grid[x][y] == "⬜️":
+                                    grid[x][y] = "✅" 
+                                    Alldone.append((x,y))
+                        delete_cell = []    
+                        for combination in list(self.combination_dict.keys()):
+                            if any (cells in Alldone for cells in combination) and self.combination_dict[combination] != 10:
+                                delete_cell.append(combination)
+                            else:
+                                continue
+                        for combinations in delete_cell:
+                            del self.combination_dict[combinations]
+                        Alldone = []
                 
                 if self.leakpos_2 in detectionGrid:
                     m+=1
                     if m == 1:
                         for (x,y) in detectionGrid:
-                            if (x,y) != botpos and (x,y) != self.leakpos_1:
-                                if grid[x][y] != "✅":
+                            if (x,y) != botpos and (x,y) != self.leakpos_2:
+                                if grid[x][y] != "✅" and grid[x][y] != "🟥":
                                     grid[x][y] = "❌"
-                
+
+                    if self.checking:
+                        for x in range(len(grid)):
+                            for y in range(len(grid)):
+                                if grid[x][y] == "⬜️":
+                                    grid[x][y] = "✅" 
+                                    Alldone.append((x,y))
+                        delete_cell = []    
+                        for combination in list(self.combination_dict.keys()):
+                            if any (cells in Alldone for cells in combination) and self.combination_dict[combination] != 10:
+                                delete_cell.append(combination)
+                            else:
+                                continue
+                        for combinations in delete_cell:
+                            del self.combination_dict[combinations]
+
                 i,j = botpos
                 neighbors = get_neighbors(0, grid, i,j)
                 grid[x_bot][y_bot] = "✅"
+                
                 if len(neighbors) != 0:
                     botpos = neighbors[random.randint(0,len(neighbors)-1)]
+                    x_bot, y_bot = botpos
                     self.MOVES+=1 # UPDATE MOVES BOT POS
                 else:
+                    # keys_with_value_5 = [key for key, value in self.combination_dict.items() if value == 5]
+                    # botpos = random.choice(keys_with_value_5)[0]  
+                    # print("botpos", botpos)  
+                    # botpos = self.priority_cell(detection = True, bot_pos=botpos)
+                    # x_bot, y_bot = botpos
                     outcell_dict = {}
                     negative_cells = []
                     for x in range(len(grid)):
                         for y in range(len(grid)):
                             if grid[x][y] == "❌" or grid[x][y] == "🟥":
                                 negative_cells.append((x,y))
-                                
                     for item in negative_cells:
                         l = find_shortest_path(2, grid ,1 ,botpos, item)
                         if l:
@@ -100,113 +188,120 @@ class bot6():
                                 outcell_dict[item] = l 
                     botpos = min((k for k, v in outcell_dict.items() if v >= 0), key=outcell_dict.get, default=None)
                     self.MOVES += outcell_dict[botpos]  # UPDATE MOVE BOT POS
+                    
+                    
+                    
                 type = False
             else:
                 type = True
 
+
+
             if type:
                 
+                # If not leak found in detection then mark all safe
+                # similarly remove from the combination grid
                 for (x,y) in detectionGrid:
-                    if (x,y) != botpos and (x,y) != self.leakpos_1:
+                    if (x,y) != self.leakpos_1 or (x,y) != self.leakpos_2:
                         grid[x][y] = "✅"
+                x_bot, y_bot = botpos
+                
+                if self.debug == 1:
+                    print("before len of dict", len(self.combination_dict))
+                    print("detection grid === ",detectionGrid)
+                keys_to_delete = []
                 
                 for combination in list(self.combination_dict.keys()):
-                    if all (cells in detectionGrid for cells in combination):
-                        continue
-                    else:
-                        del self.combination_dict[combination]
+                    if any(cell in detectionGrid for cell in combination) and self.combination_dict[combination] != 10:
+                        keys_to_delete.append(combination)
+
+                for key in keys_to_delete:
+                    del self.combination_dict[key]
+                if self.debug == 1:
+                    print("botpos", botpos)
+                    print("combination dict ===",self.combination_dict)
+                    print("after len of dict", len(self.combination_dict))
+                    print()
                 
-                # If not then find the next position for the bot
-                x_bot, y_bot = botpos
-                outcell_dict = {}
-                # Find the next available position which is atleast at some distance from the current detection grid, it will allow to check more cells faster
-                check = out_cells_bot_2(self.k, grid)
-                # if there are no cell possible then it will run as bot-1 which means finding the nearest possible cell to explore
-                if check:
-                    for item in check:
-                        l = find_shortest_path(2, grid, 1, botpos, item)
-                        if l:       
-                            # Try if the return value if -1 which means no path found from botpos to that item
-                            try:
-                                outcell_dict[item] = (len(l), l)
-                            # Now, store the length of the BFS and increament the MOVES needed to reach teh cell
-                            except:
-                                l = len(l)
-                                outcell_dict[item] = (len(l), l)
-
-                    d,p = find_min_distance_and_path(outcell_dict)
+                N_botpos = self.priority_cell(detection= False, bot_pos=botpos)
+                if N_botpos:
                     
-                    if self.leakpos_1 in p or self.leakpos_2 in p:
-                        if self.leakpos_1 in p and self.leakpos_2 in p:
-                            for (x,y) in p:
-                                c = (x,y)
-                                if c != self.leakpos_1 and c!= self.leakpos_2:
-                                    grid[x][y] = "😀"
-                                    self.MOVES+=1
-                                else:
-                                    self.leakpos_1 = (99,99)
-                                    self.leakpos_2 = (99,99)
-                                    leak = 2
-                                    break
-                        if self.leakpos_1 in p:
-                            for (x,y) in p:
-                                c = (x,y)
-                                if c != self.leakpos_1:
-                                    grid[x][y] = "😀"
-                                    self.MOVES+=1
-                                else:
-                                    self.leakpos_1 = (99,99)
-                                    leak+=1
-                                    break
-                        if self.leakpos_2 in p:
-                            for (x,y) in p:
-                                c = (x,y)
-                                if c != self.leakpos_2:
-                                    grid[x][y] = "😀"
-                                    self.MOVES+=1
-                                else:
-                                    self.leakpos_2 = (99,99)
-                                    leak+=1
-                                    break            
-                        if leak == 3:
-                            break        
-                                
-                        if self.debug == 1:
-                            for x in grid:
-                                print(''.join(x))
-                            print()
-                            print(self.MOVES, self.SENSOR)
-                        
-                        break
-                    else:
-                        grid[x_bot][y_bot] = "✅"
-                        botpos = p[-1]
-                        self.MOVES += len(p)
-                # Continue as bot-1 if there no cell possible      
+                    # print("Yes N_bopos")
+                    path = find_shortest_path(2, grid, 1, botpos, N_botpos)
+                    # print(path)
                 else:
+                    # print("No N_bopos")
+                    self.yes = True
+                    N_botpos = self.priority_cell(detection= NoneType, bot_pos=botpos)
+                    path = find_shortest_path(2, grid, 1, botpos, N_botpos)
+                    # print(path)
+                    self.yes = False
+                while len(path) != 0:
+                    botpos = path.pop(0)
+                    x,y = botpos
+                        
+                    if botpos == self.leakpos_1:
+                        leak += 1
+                        print("leak 1 found in p")
+                        keys_to_delete = []
+                        
+                        for combination in list(self.combination_dict.keys()):
+                            if self.leakpos_1 == combination[0]:
+                                self.combination_dict[combination] = 10
+                                continue
+                            else:
+                                keys_to_delete.append(combination)
 
-                    for item in outer_detection_cells(grid):
-                        # From the botpos to all marked outer cell which has atleast one open cell - Running BFS and storng data
-                        # into the dictionary with key = co-ordinates and values = length of the path
-                        l = find_shortest_path(1, grid ,1 ,botpos, item)
-                        if l:
-                            # Try if the return value if -1 which means no path found from botpos to that item
-                            try:
-                                l = int(l)
-                                outcell_dict[item] = l  
-                            # Now, store the length of the BFS and increament the MOVES needed to reach teh cell
-                            except:
-                                l = len(l)
-                                outcell_dict[item] = l 
+                        for key in keys_to_delete:
+                            del self.combination_dict[key]
+                        
+                        # for keys, items in self.combination_dict.items():
+                        #     print(keys, items)
                             
-                    # Marked the visited cell - No Leak
-                    grid[x_bot][y_bot] = "✅"
-                    # Get the minimum positive distance from botpos to nearest the outerlayer of the detection grid from the dictionary
-                    botpos = min((k for k, v in outcell_dict.items() if v >= 0), key=outcell_dict.get, default=None)
-                    # Steps needed to get the Outlayer of the detection Grid
-                    # +1 is for to move to open cell form the outer layer of detection grid
-                    self.MOVES += (outcell_dict[botpos] + 1)
-                    botpos = self.get_open(grid, botpos)[0]
+                        self.leakFound = True
+                        # self.delete_combinations(self.leakpos_1)
+                        self.leakpos_1 = (99,99)
+                        break
+                    elif botpos == self.leakpos_2:
+                        leak += 1
+                        # self.delete_combinations(self.leakpos_2)
+                        
+                        keys_to_delete = []
+            
+                        for combination in list(self.combination_dict.keys()):
+                            if self.leakpos_2 == combination[0]:
+                                self.combination_dict[combination] = 10
+                                continue
+                            else:
+                                keys_to_delete.append(combination)
+
+                        for key in keys_to_delete:
+                            del self.combination_dict[key]
+                        
+                        # for keys, items in self.combination_dict.items():
+                        #     print(keys, items)
+                            
+                        print("leak 2 found in p")
+                        self.leakFound = True
+                        self.leakpos_2 = (99,99)
+                        break
+                    
+                    if leak == 3:
+                        print("break down")
+                        break                                            
+                    # print('*********************')
+                    # print(botpos)
+                    # print("------B check----")
+                    # for keys, items in self.combination_dict.items():
+                    #     print(keys, items)
+                    # print("------A check----")
+                    
+                    keys_to_delete = []
+                    for keys in list(self.combination_dict.keys()):
+                        if (x,y) in keys and (x,y) != keys[0] :
+                            keys_to_delete.append(keys)
+                    for key in keys_to_delete:
+                            del self.combination_dict[key]
                     
 
             # Mark the bot location as visited
@@ -218,7 +313,10 @@ class bot6():
                 for x in grid:
                     print(''.join(x))
                 print()
-                print(self.MOVES, self.SENSOR)
+                print(botpos)
+                # print(self.MOVES, self.SENSOR)
+                
+                
         
     def get_open(self,  grid, bot):
         x,y = bot
@@ -226,17 +324,90 @@ class bot6():
         # Open Cells
         return [(nx, ny) for nx, ny in neighbors if 0 <= nx < len(grid) and 0 <= ny < len(grid) and (grid[nx][ny] == "⬜️" or grid[nx][ny] == "🟥" or grid[nx][ny] == "❌")]
 
+    def priority_cell(self, detection, bot_pos):
+        
+        if self.yes:
+            distance = []
+            possible_locations = set()
+            for combinations in list(self.combination_dict.keys()):
+                if bot_pos != combinations[0] and self.combination_dict[combinations] != 10:
+                    distance.append( (combinations[0] , self.find_distance(bot_pos, combinations[0])) )
+                if bot_pos != combinations[1] and self.combination_dict[combinations] == 10:
+                    distance.append( (combinations[1] , self.find_distance(bot_pos, combinations[1])) )
+            go_to_priority_cell = min(distance, key=lambda x: x[1])[0]
+            return go_to_priority_cell
+        
+        if detection:
+            print("Entered")
+            possible_locations = set()
+            # print(self.combination_dict)
+            
+            min_distance = float('inf')
+            for combinations in list(self.combination_dict.keys()):
+                if bot_pos != combinations[0] and bot_pos != combinations[0]:
+                    # if combinations[0] != combinations[1]:
+                    distance = self.find_distance(bot_pos, combinations[0])
+                    if min_distance > distance:
+                        min_distance = distance
+                        go_to_priority_cell = combinations[1]
+                    
+            return go_to_priority_cell
+        
+        else:
+            if not self.leakFound:
+                possible_locations = set()
+                for combinations in list(self.combination_dict.keys()):
+                    distance = self.find_distance(bot_pos, combinations[0])
+                    if 2 * self.k + 1 >= distance > 2 * self.k:
+                        possible_locations.add(combinations[0])
+                possible_locations = list(possible_locations)
+                if possible_locations:
+                    go_to_priority_cell = possible_locations[random.randint(0, len(possible_locations) - 1)]
+                else:
+                    go_to_priority_cell = None
+                return go_to_priority_cell
+            else:
+                possible_locations = set()
+                for combinations in list(self.combination_dict.keys()):
+                    distance = self.find_distance(bot_pos, combinations[1])
+                    if 2 * self.k + 1 >= distance > 2 * self.k:
+                        possible_locations.add(combinations[1])
+                possible_locations = list(possible_locations)
+                if possible_locations:
+                    go_to_priority_cell = possible_locations[random.randint(0, len(possible_locations) - 1)]
+                else:
+                    go_to_priority_cell = None
+                return go_to_priority_cell
+        
+        
+        
+    def find_distance(self, start, end):
+        return abs(start[0] - end[0]) + abs(start[1]-end[1])
+    
+    
     def get_dict(self, grid):
         my_dict = {}
-        used_cells = set() 
         for x in range(len(grid)):
             for y in range(len(grid)):
                 if grid[x][y] != "⬛️":
                     for i in range(len(grid)):
                         for j in range(len(grid)):
-                            if (x, y) != (i, j) and grid[i][j] != "⬛️":
-                                # Check if both pairs contain the same cells in any order
-                                if ((x, y), (i, j)) not in used_cells and ((i, j), (x, y)) not in used_cells:
-                                    my_dict[((x, y), (i, j))] = 1
-                                    used_cells.add(((x, y), (i, j)) )  # Add the used cell pair to the set
+                            if (x,y) != (i,j) and grid[i][j] != "⬛️":
+                                my_dict[((x, y), (i, j))] = 1
         return my_dict
+    
+    def delete_combinations(self, leak_pos):
+        
+        # print("Entered to detele")
+        keys_to_delete = []
+        for combination in list(self.combination_dict.keys()):
+            if leak_pos == combination[0]:
+                self.combination_dict[combination] = 10
+            else:
+                keys_to_delete.append(combination)
+
+        for key in keys_to_delete:
+            del self.combination_dict[key]
+        
+        # for keys, items in self.combination_dict.items():
+        #     print(keys, items)
