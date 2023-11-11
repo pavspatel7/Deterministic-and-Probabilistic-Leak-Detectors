@@ -36,16 +36,21 @@ class bot4():
                     cell_probability_dict[(x, y)] = 1
                 if grid[x][y] == "⬛️" or grid[x][y] == "😀":
                     cell_probability_dict[(x, y)] = 0
+
+        # each cell starts with equal probability of containing a leak except where the bot spawns
         for items in cell_probability_dict.keys():
             if cell_probability_dict[items] == 1:
                 cell_probability_dict[items] = 1 / opent
 
+        # task is done when leak is found
         while botpos != self.leakpos_1:
 
             # precalculate distances from botpos to all other locations
+            # this is achieved using Dijkstra's algorithm
             distances = all_distances_bfs(2, grid, 1, botpos)
             if debug: print(distances)
 
+            # flag that determines whether to increase sensing or not
             if nobeepflag:
                 check = 1
             else:
@@ -75,9 +80,11 @@ class bot4():
 
             if curr_beep_prob >= rand:
                 if debug: print("beep")
+                # P(leak in j | beep in i)
                 cell_probability_dict = prob_leak_given_beep(alpha, grid, cell_probability_dict, botpos, distances)
             else:
                 if debug: print("no beep")
+                # P(leak in j | beep not in i)
                 cell_probability_dict = prob_leak_given_no_beep(alpha, grid, cell_probability_dict, botpos, distances)
 
             # plan a path towards high probability with short path from botpos in grid
@@ -92,6 +99,7 @@ class bot4():
             end_a, end_b = max_keys_w_min_len[random.randint(0, len(max_keys_w_min_len) - 1)]
             path = find_shortest_path_bot3(2, grid, 1, botpos, (end_a, end_b))
 
+            # complete exploring the path before sensing again
             while len(path) != 0:
                 botpos = path.pop(0)
 

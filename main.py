@@ -34,7 +34,7 @@ timer = 0
 # grid_with_one_leak, detectionGrid, botpos, leakpos_1  = runMain(k,sizeOfGrid,1)
 # grid_with_two_leak, detectionGrid, botpos, leakpos_1, leakpos_2 = runMain(k,sizeOfGrid,2)
 
-print("alpha 0 to 1, bot 4 repeat 5 times each step after beep found, 200 obs")
+print("alpha 0 to 1, bot 4 repeat 3 times each step after beep found, 200 obs")
 count = 0
 while count < 200:
     grid_with_one_leak, botpos, leakpos_1 = runMain(k, sizeOfGrid, leaks)
@@ -53,11 +53,11 @@ while count < 200:
     print("BOT4 =>   sensor: ", bot_4.SENSOR, "  moves: ", bot_4.MOVES, "  action_sum: ", bot_4.SENSOR + bot_4.MOVES)
 
     # Write data into the Excel file
-    sheet[f'A{row}'] = bot_3.SENSOR
-    sheet[f'B{row}'] = bot_3.MOVES
-    sheet[f'C{row}'] = bot_4.SENSOR
-    sheet[f'D{row}'] = bot_4.MOVES
-    row += 1
+    # sheet[f'A{row}'] = bot_3.SENSOR
+    # sheet[f'B{row}'] = bot_3.MOVES
+    # sheet[f'C{row}'] = bot_4.SENSOR
+    # sheet[f'D{row}'] = bot_4.MOVES
+    # row += 1
 
     # grid_with_two_leak, botpos, leakpos_1, leakpos_2 = runMain(k,sizeOfGrid,2)
     # # bot 5 vs bot 6
@@ -82,6 +82,12 @@ while count < 200:
         avg_2 = avg_2 / 200
         print("Bot3 final avg -", avg_1)
         print("Bot4 final avg -", avg_2)
+
+        row += 1
+        sheet[f'A{row}'] = avg_1
+        row += 1
+        sheet[f'A{row}'] = avg_2
+
         print()
         print()
         print()
@@ -94,12 +100,12 @@ while count < 200:
         alpha += 0.05
         print("alpha", alpha)
         print()
-        if alpha == 1:
+        if alpha >= 1.02:
             print()
             print("data collected")
             break
         else:
             count = 0
 
-workbook.save('dijkstras2005.xlsx')
+workbook.save('dijkstras2003.xlsx')
 workbook.close()

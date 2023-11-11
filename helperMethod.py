@@ -119,6 +119,8 @@ def find_min_distance_and_path(your_dict):
     return min_distance, min_distance_path
 
 
+# returns shortest path from start location to each and every valid cell in the grid
+# Dijkstra's algorithm
 def all_distances_bfs(index, original_grid, bot_no, start):
     queue = deque([(start, 0)])
     distances = {start: 0}
@@ -156,6 +158,7 @@ def find_shortest_path_bot3(index, original_grid, bot_no, start, end):
     return []
 
 
+# P(beep in i | leak in j) = e^(-alpha(d-1))
 def beep_in_i_given_leak_in_j(a, grid, start, end, distances):
     e = 2.71828
     result = 0
@@ -165,10 +168,12 @@ def beep_in_i_given_leak_in_j(a, grid, start, end, distances):
     return result
 
 
+# P(beep not in i | leak in j) = 1 - e^(-alpha(d-1))
 def no_beep_in_i_given_leak_in_j(a, grid, start, end, distances):
     return 1 - beep_in_i_given_leak_in_j(a, grid, start, end, distances)
 
 
+# P(leak in j | beep not in i)
 def prob_leak_given_no_beep(a, grid, cell_probability_dict, botpos, distances):
     denominator = 0
     for key, probability in cell_probability_dict.items():
@@ -186,6 +191,7 @@ def prob_leak_given_no_beep(a, grid, cell_probability_dict, botpos, distances):
     return cell_probability_dict
 
 
+# P(leak in j | beep in i)
 def prob_leak_given_beep(a, grid, cell_probability_dict, botpos, distances):
     denominator = 0
     for key, probability in cell_probability_dict.items():
@@ -203,6 +209,7 @@ def prob_leak_given_beep(a, grid, cell_probability_dict, botpos, distances):
     return cell_probability_dict
 
 
+# P(leak in j | leak not in i) = P(leak in j)/(1 - P(leak in i))
 def leak_in_j_given_no_leak_in_i(cell_probability_dict, botpos, leak_in_i):
     cell_probability_dict[botpos] = 0
     denominator = 1 - leak_in_i
