@@ -54,7 +54,7 @@ class bot4():
             if nobeepflag:
                 check = 1
             else:
-                check = 5
+                check = 10
 
             # P(leak in j | leak not in i)
             cell_probability_dict = leak_in_j_given_no_leak_in_i(cell_probability_dict, botpos, leak_in_i)
