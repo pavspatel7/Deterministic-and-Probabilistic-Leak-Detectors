@@ -26,13 +26,13 @@ from Probabilistic_Leak_Detectors.botNine import bot9
 from layout import runMain
 
 k = 3               # size of detector ((2*k) +1)
-alpha = 0.05          # value of alpha for bot 3, bot 4
+alpha = 0.5          # value of alpha for bot 3, bot 4
 sizeOfGrid = 30
 avg_1 = 0
 avg_2 = 0
 avg_3 = 0
 timer = 0
-print("alpha 0.05 to 0.5, 50 obs")
+print("alpha 0.5 to 1, 50 obs")
 
 count = 0
 while count < 50:
@@ -99,7 +99,6 @@ while count < 50:
         sheet[f'A{row}'] = avg_2
         row += 1
         sheet[f'A{row}'] = avg_3
-        row += 1
 
         print()
         print()
@@ -115,13 +114,13 @@ while count < 50:
         print("alpha", alpha)
         print()
         sheet[f'A{row}'] = alpha
-        print("alpha 0.05 to 0.5")
-        if alpha >= 0.52:
+        print("alpha 0.5 to 1")
+        if alpha >= 1.02:
             print()
             print("data collected")
             break
         else:
             count = 0
 
-workbook.save('bot_7_8_9_report_50.xlsx')
+workbook.save('bot_7_8_9_report2_50.xlsx')
 workbook.close()

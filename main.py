@@ -9,7 +9,7 @@ from deterministic_Leak_detectors.botSix import bot6
 from Probabilistic_Leak_Detectors.botThree import bot3
 from Probabilistic_Leak_Detectors.botFour import bot4
 from Probabilistic_Leak_Detectors.botSeven import bot7
-# from Probabilistic_Leak_Detectors.botEight import bot8
+from Probabilistic_Leak_Detectors.botEight import bot8
 from Probabilistic_Leak_Detectors.botNine import bot9
 
 # Layout
@@ -27,7 +27,7 @@ for i in range(observations):
     print(f"K = {k} and alpha = {alpha}")
     print("*****************************************************************************************************************")
     
-    grid_with_one_leak, botpos, leakpos_1 = runMain(k, sizeOfGrid, 1)
+    # grid_with_one_leak, botpos, leakpos_1 = runMain(k, sizeOfGrid, 1)
     # Bot 1 vs Bot 2
     # bot_1 = bot1(k, grid_with_one_leak, botpos, leakpos_1)
     # print("BOT1 =>   sensor: ", bot_1.SENSOR, "  moves: ", bot_1.MOVES, "  action_sum: ", bot_1.SENSOR + bot_1.MOVES)
@@ -44,15 +44,15 @@ for i in range(observations):
     # # bot 5 vs bot 6
     # bot_5 = bot5(k, grid_with_two_leak, botpos, leakpos_1, leakpos_2)
     # print("BOT5 =>   sensor: ", bot_5.SENSOR, "  moves: ", bot_5.MOVES, "  action_sum: ", bot_5.SENSOR + bot_5.MOVES)
-    bot_6 = bot6(k, grid_with_two_leak, botpos, leakpos_1, leakpos_2)
-    print("BOT6 =>   sensor: ", bot_6.SENSOR, "  moves: ", bot_6.MOVES, "  action_sum: ", bot_6.SENSOR + bot_6.MOVES)
+    # bot_6 = bot6(k, grid_with_two_leak, botpos, leakpos_1, leakpos_2)
+    # print("BOT6 =>   sensor: ", bot_6.SENSOR, "  moves: ", bot_6.MOVES, "  action_sum: ", bot_6.SENSOR + bot_6.MOVES)
     # print("*****************************************************************************************************************")
     # # bot 7 vs bot 8
     # bot_7 = bot7(grid_with_two_leak, botpos, leakpos_1, leakpos_2, alpha)
     # print("BOT7 =>   sensor: ", bot_7.SENSOR, "  moves: ", bot_7.MOVES, "  action_sum: ", bot_7.SENSOR + bot_7.MOVES)
     # bot_8 = bot8(grid_with_two_leak, botpos, leakpos_1, leakpos_2, alpha)
     # print("BOT8 =>   sensor: ", bot_8.SENSOR, "  moves: ", bot_8.MOVES, "  action_sum: ", bot_8.SENSOR + bot_8.MOVES)
-    # bot_9 = bot9(grid_with_two_leak, botpos, leakpos_1, leakpos_2, alpha)
-    # print("BOT8 =>   sensor: ", bot_9.SENSOR, "  moves: ", bot_9.MOVES, "  action_sum: ", bot_9.SENSOR + bot_9.MOVES)
+    bot_9 = bot9(grid_with_two_leak, botpos, leakpos_1, leakpos_2, alpha)
+    print("BOT9 =>   sensor: ", bot_9.SENSOR, "  moves: ", bot_9.MOVES, "  action_sum: ", bot_9.SENSOR + bot_9.MOVES)
     # print("*****************************************************************************************************************")
 

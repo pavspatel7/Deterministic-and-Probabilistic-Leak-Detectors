@@ -1,11 +1,11 @@
 import random
 from helperMethod_bot8 import *
 
-class bot9():
+class bot8():
     
     def __init__(self, getGrid, botpos, leakpos_1, leakpos_2, alpha):
         
-        self.bot_9_grid = [row.copy() for row in getGrid]
+        self.bot_8_grid = [row.copy() for row in getGrid]
         self.botpos = botpos
         self.leakpos_1 = leakpos_1
         self.leakpos_2 = leakpos_2
@@ -14,12 +14,11 @@ class bot9():
         self.MOVES = 0
         self.SENSOR = 0
         
-        self.task_for_bot9(self.bot_9_grid, botpos, leakpos_1, leakpos_2, alpha)
+        self.task_for_bot8(self.bot_8_grid, botpos, leakpos_1, leakpos_2, alpha)
 
-    def task_for_bot9(self, grid, botpos, leakpos_1, leakpos_2, alpha):
+    def task_for_bot8(self, grid, botpos, leakpos_1, leakpos_2, alpha):
         debug = False
         leaks_to_find = [leakpos_1, leakpos_2]
-        beep_flag = False
         # probability matrix
         cell_pair_probability_dict = {}
         # cell_probability_dict = {}
@@ -74,22 +73,19 @@ class bot9():
 
             # P(leak in i,j | leak not in k)
             # cell_pair_probability_dict = leak_in_i_j_given_no_leak_in_k(cell_pair_probability_dict, botpos)
-            if(not beep_flag):
-                # P(beep in k | leaks in actual leaks location)
-                if(len(leaks_to_find) == 1):
-                    curr_beep_prob = beep_in_i_given_leak_in_j(alpha, grid, botpos, leaks_to_find[0], distances)
-                else:
-                    curr_beep_prob = beep_in_k_given_leak_in_i_and_j(alpha, grid, botpos, self.leakpos_1, self.leakpos_2, distances)
-                # generate a random number to compare
-                rand = random.uniform(0, 1)
-                self.SENSOR += 1
-                if curr_beep_prob >= rand:
-                    if debug: print("beep")
-                    cell_pair_probability_dict = prob_leak_given_beep(alpha, grid, cell_pair_probability_dict, botpos, distances)
-                else:
-                    if debug: print("no beep")
-                    cell_pair_probability_dict = prob_leak_given_no_beep(alpha, grid, cell_pair_probability_dict, botpos, distances)
-            beep_flag = False
+
+            # P(beep in k | leaks in actual leaks location)
+            curr_beep_prob = beep_in_k_given_leak_in_i_and_j(alpha, grid, botpos, self.leakpos_1, self.leakpos_2, distances)
+            # generate a random number to compare
+            rand = random.uniform(0, 1)
+            self.SENSOR += 1
+            if curr_beep_prob >= rand:
+                if debug: print("beep")
+                cell_pair_probability_dict = prob_leak_given_beep(alpha, grid, cell_pair_probability_dict, botpos, distances)
+            else:
+                if debug: print("no beep")
+                cell_pair_probability_dict = prob_leak_given_no_beep(alpha, grid, cell_pair_probability_dict, botpos, distances)
+
             # plan a path towards high probability with short path from botpos in grid
             max_value = max(cell_pair_probability_dict.values())
             if debug: print("Max prob is:", max_value)
@@ -117,8 +113,7 @@ class bot9():
 
             while len(path) != 0:
                 botpos = path.pop(0)
-                distances = all_distances_bfs(2, grid, 1, botpos)
-                    
+
                 if debug:
                     i, j = botpos
                     grid[i][j] = "😀"
@@ -140,21 +135,7 @@ class bot9():
                     if(botpos not in leaks_found):
                         cell_pair_probability_dict = leak_in_i_j_given_no_leak_in_k(cell_pair_probability_dict, botpos)
                     #leak_in_j_given_no_leak_in_i(cell_probability_dict, botpos, leak_in_i)
-                 # P(beep in k | leaks in actual leaks location)
-                if(len(leaks_to_find) == 1):
-                    curr_beep_prob = beep_in_i_given_leak_in_j(alpha, grid, botpos, leaks_to_find[0], distances)
-                else:
-                    curr_beep_prob = beep_in_k_given_leak_in_i_and_j(alpha, grid, botpos, self.leakpos_1, self.leakpos_2, distances)
-                # generate a random number to compare
-                rand = random.uniform(0, 1)
-                self.SENSOR += 1
-                if curr_beep_prob >= rand:
-                    if debug: print("beep")
-                    cell_pair_probability_dict = prob_leak_given_beep(alpha, grid, cell_pair_probability_dict, botpos, distances)
-                    beep_flag = True
-                    break
                 self.MOVES += 1
-            
             if len(leaks_to_find) == 0:
                 if debug: print("Leak Found")
                 break
