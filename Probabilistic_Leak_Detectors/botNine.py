@@ -18,6 +18,7 @@ class bot9():
 
     def task_for_bot9(self, grid, botpos, leakpos_1, leakpos_2, alpha):
         debug = False
+        e = 2.71828
         leaks_to_find = [leakpos_1, leakpos_2]
         beep_flag = False
         # probability matrix
@@ -27,6 +28,7 @@ class bot9():
         leak_in_k = 0
         leak_time = 0
         leaks_found = []
+        retry_time = 0
 
         if debug:
             for x in grid:
@@ -76,14 +78,11 @@ class bot9():
             # cell_pair_probability_dict = leak_in_i_j_given_no_leak_in_k(cell_pair_probability_dict, botpos)
             if(not beep_flag):
                 # P(beep in k | leaks in actual leaks location)
-                if(len(leaks_to_find) == 1):
-                    curr_beep_prob = beep_in_i_given_leak_in_j(alpha, grid, botpos, leaks_to_find[0], distances)
-                else:
-                    curr_beep_prob = beep_in_k_given_leak_in_i_and_j(alpha, grid, botpos, self.leakpos_1, self.leakpos_2, distances)
+                curr_beep_prob1 = beep_in_k_given_leak_in_i_and_j(alpha, grid, botpos, self.leakpos_1, self.leakpos_2, distances)
                 # generate a random number to compare
                 rand = random.uniform(0, 1)
                 self.SENSOR += 1
-                if curr_beep_prob >= rand:
+                if curr_beep_prob1 >= rand:
                     if debug: print("beep")
                     cell_pair_probability_dict = prob_leak_given_beep(alpha, grid, cell_pair_probability_dict, botpos, distances)
                 else:
@@ -114,7 +113,7 @@ class bot9():
             if debug: print(max_keys_w_min_len)
             end_a, end_b = max_keys_w_min_len[random.randint(0, len(max_keys_w_min_len) - 1)]
             path = find_shortest_path_bot3(2, grid, 1, botpos, (end_a, end_b))
-
+            path_len = len(path)
             while len(path) != 0:
                 botpos = path.pop(0)
                 distances = all_distances_bfs(2, grid, 1, botpos)
@@ -140,19 +139,23 @@ class bot9():
                     if(botpos not in leaks_found):
                         cell_pair_probability_dict = leak_in_i_j_given_no_leak_in_k(cell_pair_probability_dict, botpos)
                     #leak_in_j_given_no_leak_in_i(cell_probability_dict, botpos, leak_in_i)
-                 # P(beep in k | leaks in actual leaks location)
-                if(len(leaks_to_find) == 1):
-                    curr_beep_prob = beep_in_i_given_leak_in_j(alpha, grid, botpos, leaks_to_find[0], distances)
-                else:
-                    curr_beep_prob = beep_in_k_given_leak_in_i_and_j(alpha, grid, botpos, self.leakpos_1, self.leakpos_2, distances)
-                # generate a random number to compare
-                rand = random.uniform(0, 1)
-                self.SENSOR += 1
-                if curr_beep_prob >= rand:
-                    if debug: print("beep")
-                    cell_pair_probability_dict = prob_leak_given_beep(alpha, grid, cell_pair_probability_dict, botpos, distances)
-                    beep_flag = True
-                    break
+                if botpos not in leaks_found:
+                    # P(beep in k | leaks in actual leaks location)
+                    curr_beep_prob2 = beep_in_k_given_leak_in_i_and_j(alpha, grid, botpos, self.leakpos_1, self.leakpos_2, distances)
+                    # generate a random number to compare
+                    rand = random.uniform(0, 1)
+                    self.SENSOR += 1
+                    if curr_beep_prob2 < curr_beep_prob1 and retry_time < 3:
+                        if debug: print("let's beep again")
+                        #cell_pair_probability_dict = prob_leak_given_no_beep(alpha, grid, cell_pair_probability_dict, botpos, distances)
+                        beep_flag = False
+                        retry_time += 1
+                        break
+                    elif (retry_time >= 3 and len(path) == 0):
+                        retry_time = 0
+                    elif (retry_time < 3 and curr_beep_prob1 < curr_beep_prob2):
+                        retry_time = 0
+                    curr_beep_prob1 = curr_beep_prob2
                 self.MOVES += 1
             
             if len(leaks_to_find) == 0:

@@ -13,7 +13,7 @@ class bot7():
         self.task_for_bot7(self.bot_7_grid, botpos, leakpos_1, leakpos_2, alpha)
 
     def task_for_bot7(self, grid, botpos, leakpos_1, leakpos_2, alpha):
-        debug = True
+        debug = False
         # probability matrix
         cell_probability_dict = {}
         opent = 0
