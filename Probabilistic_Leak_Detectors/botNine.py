@@ -17,7 +17,7 @@ class bot9():
         self.task_for_bot9(self.bot_9_grid, botpos, leakpos_1, leakpos_2, alpha)
 
     def task_for_bot9(self, grid, botpos, leakpos_1, leakpos_2, alpha):
-        debug = True
+        debug = False
         leaks_to_find = [leakpos_1, leakpos_2]
         # probability matrix
         cell_pair_probability_dict = {}
