@@ -64,16 +64,16 @@ class bot8():
         #     for x in grid:
         #         print(''.join(x))
         #     print()
+        # P(leak in i,j | leak not in k)
+        cell_pair_probability_dict = leak_in_i_j_given_no_leak_in_k(cell_pair_probability_dict, botpos)
 
         while True:
 
             # precalculate distances from botpos to all other locations
             distances = all_distances_bfs(2, grid, 1, botpos)
             # if debug: print(distances)
-
-            # P(leak in i,j | leak not in k)
-            # cell_pair_probability_dict = leak_in_i_j_given_no_leak_in_k(cell_pair_probability_dict, botpos)
-
+            clean_up(cell_pair_probability_dict)
+            
             # P(beep in k | leaks in actual leaks location)
             curr_beep_prob = beep_in_k_given_leak_in_i_and_j(alpha, grid, botpos, self.leakpos_1, self.leakpos_2, distances)
             # generate a random number to compare
@@ -114,12 +114,15 @@ class bot8():
             while len(path) != 0:
                 botpos = path.pop(0)
 
+                i,j = botpos
+                grid[i][j] = "😀"
+
                 if debug:
-                    i, j = botpos
-                    grid[i][j] = "😀"
                     for x in grid:
                         print(''.join(x))
                     print()
+                    i, j = botpos
+                    grid[i][j] = "✅"
 
                 if botpos in leaks_to_find:
                     leak_time += 1
