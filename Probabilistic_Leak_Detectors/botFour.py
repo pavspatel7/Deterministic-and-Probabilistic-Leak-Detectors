@@ -54,7 +54,10 @@ class bot4():
             if nobeepflag:
                 check = 1
             else:
-                check = 2
+                check = alpha*20
+
+            # if check < 1:
+            #     check = 1
 
             if debug: print(check)
 
@@ -101,8 +104,13 @@ class bot4():
             end_a, end_b = max_keys_w_min_len[random.randint(0, len(max_keys_w_min_len) - 1)]
             path = find_shortest_path_bot3(2, grid, 1, botpos, (end_a, end_b))
 
+            # temp_count = len(path)
             # complete exploring the path before sensing again
             while len(path) != 0:
+                # if not nobeepflag:
+                #     if (1/3)*temp_count == len(path):
+                #         break
+
                 botpos = path.pop(0)
 
                 if debug:
