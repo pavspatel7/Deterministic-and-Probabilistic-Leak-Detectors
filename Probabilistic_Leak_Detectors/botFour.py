@@ -54,9 +54,7 @@ class bot4():
             if nobeepflag:
                 check = 1
             else:
-                check = alpha*25
-            if check < 1:
-                check = 1
+                check = 2
 
             if debug: print(check)
 
@@ -79,8 +77,7 @@ class bot4():
                     if nobeepflag:
                         nobeepflag = False
                     break
-                else:
-                    nobeepflag = True
+
                 count += 1
 
             if curr_beep_prob >= rand:
