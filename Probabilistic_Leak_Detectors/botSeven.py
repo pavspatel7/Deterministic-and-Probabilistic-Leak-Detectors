@@ -47,10 +47,10 @@ class bot7():
             # precalculate distances from botpos to all other locations
             # this is achieved using Dijkstra's algorithm
             distances = all_distances_bfs(2, grid, 1, botpos)
-            if debug: print(distances)
+            #if debug: print(distances)
 
             # P(leak in j | leak not in i)
-            cell_probability_dict = leak_in_j_given_no_leak_in_i(cell_probability_dict, botpos, leak_in_i)
+            # cell_probability_dict = leak_in_j_given_no_leak_in_i(cell_probability_dict, botpos, leak_in_i)
 
             # P(beep in i | leak in leak location)
             curr_beep_prob = beep_in_i_given_leak_in_j(alpha, grid, botpos, leakpos, distances)
@@ -93,6 +93,7 @@ class bot7():
                     leakpos = leakpos_2
                     if debug: print("leak 1 found")
                     leak_time += 1
+                    leakpos_1 = (99,99)
                     if leak_time == 2:
                         leakFound = True
                         break
@@ -100,6 +101,7 @@ class bot7():
                     leakpos = leakpos_1
                     if debug: print("leak 2 found")
                     leak_time += 1
+                    leakpos_2 = (99,99)
                     if leak_time == 2:
                         leakFound = True
                         break

@@ -33,7 +33,7 @@ for i in range(observations):
     # bot_1 = bot1(k, grid_with_one_leak, botpos, leakpos_1)
     # print("BOT1 =>   sensor: ", bot_1.SENSOR, "  moves: ", bot_1.MOVES, "  action_sum: ", bot_1.SENSOR + bot_1.MOVES)
     # bot_2 = bot2(k, grid_with_one_leak, botpos, leakpos_1)
-    # print("BOT2 =>   sensor: ", bot_2.SENSOR, "  moves: ", bot_2.MOVES, "  action_sum: ", bot_3.SENSOR + bot_2.MOVES)
+    # print("BOT2 =>   sensor: ", bot_2.SENSOR, "  moves: ", bot_2.MOVES, "  action_sum: ", bot_2.SENSOR + bot_2.MOVES)
     # print("*****************************************************************************************************************")
     # Bot 3 vs Bot 4
     bot_3 = bot3(grid_with_one_leak, botpos, leakpos_1, alpha)

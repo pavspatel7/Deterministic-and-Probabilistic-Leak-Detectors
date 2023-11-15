@@ -6,12 +6,21 @@ def get_cell_probability(cell_pair_probability_dict, cell):
     for pair in pairs_w_cell:
         prob += cell_pair_probability_dict[pair]
     return prob
+
+def clean_up(cell_pair_probability_dict):
+    combination_to_remove = []
+    for pair in cell_pair_probability_dict.keys():
+        if cell_pair_probability_dict[pair] == 0:
+            combination_to_remove.append(pair)
     
+    for items in combination_to_remove:
+        del cell_pair_probability_dict[items]
+
 def leak_in_i_j_given_leak_in_k(cell_pair_probability_dict, k):
     denominator = get_cell_probability(cell_pair_probability_dict, k)
     pairs_without_k = []
     for pair in list(cell_pair_probability_dict.keys()):
-        if pair[0] != k and pair[1] != k:
+        if not (pair[0] == k or pair[1] == k):
             pairs_without_k.append(pair)
         else:
             cell_pair_probability_dict[pair] = cell_pair_probability_dict[pair]/denominator
