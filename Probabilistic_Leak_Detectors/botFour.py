@@ -54,10 +54,14 @@ class bot4():
             if nobeepflag:
                 check = 1
             else:
-                check = 10
+                check = alpha*25
+            if check < 1:
+                check = 1
+
+            if debug: print(check)
 
             # P(leak in j | leak not in i)
-            cell_probability_dict = leak_in_j_given_no_leak_in_i(cell_probability_dict, botpos, leak_in_i)
+            # cell_probability_dict = leak_in_j_given_no_leak_in_i(cell_probability_dict, botpos, leak_in_i)
 
             count = 0
             curr_beep_prob = 0
@@ -75,15 +79,16 @@ class bot4():
                     if nobeepflag:
                         nobeepflag = False
                     break
-
+                else:
+                    nobeepflag = True
                 count += 1
 
             if curr_beep_prob >= rand:
-                if debug: print("beep")
+                if debug: print("beep", count)
                 # P(leak in j | beep in i)
                 cell_probability_dict = prob_leak_given_beep(alpha, grid, cell_probability_dict, botpos, distances)
             else:
-                if debug: print("no beep")
+                if debug: print("no beep", count)
                 # P(leak in j | beep not in i)
                 cell_probability_dict = prob_leak_given_no_beep(alpha, grid, cell_probability_dict, botpos, distances)
 
