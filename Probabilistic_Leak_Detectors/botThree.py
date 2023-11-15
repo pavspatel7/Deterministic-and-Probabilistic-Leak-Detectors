@@ -50,7 +50,7 @@ class bot3():
             if debug: print(distances)
 
             # P(leak in j | leak not in i)
-            cell_probability_dict = leak_in_j_given_no_leak_in_i(cell_probability_dict, botpos, leak_in_i)
+            # cell_probability_dict = leak_in_j_given_no_leak_in_i(cell_probability_dict, botpos, leak_in_i)
 
             # P(beep in i | leak in leak location)
             curr_beep_prob = beep_in_i_given_leak_in_j(alpha, grid, botpos, self.leakpos_1, distances)
