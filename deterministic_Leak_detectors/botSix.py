@@ -52,7 +52,6 @@ class bot6():
                 self.leak_found.append(self.leakpos_1)
                 self.dict_clean_up(1, leakList)
                 self.leakpos_1 = (99,99)
-                
                 leak+=1
                                 
             if botpos == self.leakpos_2 and leak == 1:
@@ -150,6 +149,8 @@ class bot6():
                             self.Priority_find.remove((x,y))
                 
                 self.Priority_find = list(set(self.Priority_find))
+                
+                
                 # print("Entered to get next move with botpos", botpos)
                 endCell = self.get_next_move(self.combinations_dict, detectionGrid, botpos)
                 if endCell:
@@ -290,11 +291,7 @@ class bot6():
                 return maxium
         else:
             return None
-            # cellA, cellB = random.choice(list(self.combinations_dict.keys()))
-            # if cellA not in self.leak_found:
-            #     return cellA
-            # else:
-            #     return cellB                
+              
             
     # Manhattan Distance
     def find_distance(self, start, end):
